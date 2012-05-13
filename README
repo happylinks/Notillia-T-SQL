@@ -1,0 +1,1 @@
+This is the SQL part of a PHP generator we're creating. This generator will use T-SQL to read metadata of a database and will generate the PHP files found on https://github.com/happylinks/Notillia-PHP
