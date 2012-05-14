@@ -42,8 +42,8 @@ END
 GO
 
 --Tests
---EXECUTE Notillia.EnableOLEAutomationProcedures;
---EXECUTE Notillia.DisableOLEAutomationProcedures;
+--EXECUTE Notillia.procEnableOLEAutomationProcedures;
+--EXECUTE Notillia.procDisableOLEAutomationProcedures;
 
---EXECUTE Notillia.EnableXP_CMDShell;
---EXECUTE Notillia.DisableXP_CMDShell;
+--EXECUTE Notillia.procDisableXP_CMDShell;
+--EXECUTE Notillia.procEnableXP_CMDShell;
