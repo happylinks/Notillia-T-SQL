@@ -4,7 +4,7 @@ GO
 
 --Security Settings Functions
 --OLE
-CREATE PROCEDURE Notillia.EnableOLEAutomationProcedures AS BEGIN
+CREATE PROCEDURE Notillia.procEnableOLEAutomationProcedures AS BEGIN
 	EXECUTE sp_configure 'show advanced options', 1;
 	RECONFIGURE;
 	
@@ -13,7 +13,7 @@ CREATE PROCEDURE Notillia.EnableOLEAutomationProcedures AS BEGIN
 END
 GO
 
-CREATE PROCEDURE Notillia.DisableOLEAutomationProcedures AS BEGIN
+CREATE PROCEDURE Notillia.procDisableOLEAutomationProcedures AS BEGIN
 	EXECUTE sp_configure 'Ole Automation Procedures', 0;
 	RECONFIGURE;
 	
@@ -23,7 +23,7 @@ END
 GO
 
 --CMD_SHELL
-ALTER PROCEDURE Notillia.EnableXP_CMDShell AS BEGIN
+CREATE PROCEDURE Notillia.procEnableXP_CMDShell AS BEGIN
 	EXECUTE sp_configure 'show advanced options', 1;
 	RECONFIGURE;
 	
@@ -32,7 +32,7 @@ ALTER PROCEDURE Notillia.EnableXP_CMDShell AS BEGIN
 END
 GO
 
-ALTER PROCEDURE Notillia.DisableXP_CMDShell AS BEGIN
+CREATE PROCEDURE Notillia.procDisableXP_CMDShell AS BEGIN
 	EXECUTE sp_configure 'xp_cmdshell', 0;
 	RECONFIGURE;
 	

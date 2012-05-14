@@ -3,18 +3,20 @@ USE muziekdatabase;
 GO
 
 --Mainloop
-CREATE PROCEDURE startGeneration AS BEGIN
-	EXECUTE Notillia.GenerateMySQL;
-	EXECUTE Notillia.GeneratePHPWebApplication;
+CREATE PROCEDURE Notillia.procStartGeneration AS BEGIN
+	EXECUTE Notillia.procGenerateMySQL;
+	EXECUTE Notillia.procGeneratePHPWebApplication;
 END
 GO
 
---CREATE PROCEDURE Notillia.GenerateMySQL AS BEGIN
+EXECUTE Notillia.procStartGeneration
+
+--CREATE PROCEDURE Notillia.procGenerateMySQL AS BEGIN
 --	PRINT 'Some MYSQL Code.';
 --END
 --GO
 
---CREATE PROCEDURE Notillia.GeneratePHPWebApplication AS BEGIN
+--CREATE PROCEDURE Notillia.procGeneratePHPWebApplication AS BEGIN
 --	PRINT 'Some PHP Webapplication.';
 --END
 --GO
