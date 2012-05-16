@@ -1,0 +1,134 @@
+.tableparent,
+.tablechild {
+  background: none;
+  border: 1px solid #DDDDDD;
+  border-top: 0px;
+  border-radius: 0px 0px 4px 4px;
+  padding: 19px;
+  margin-top: -18px;
+}
+.tableparent .head,
+.tablechild .head {
+  margin-bottom: 30px;
+}
+.tableparent .head h1,
+.tablechild .head h1,
+.tableparent .head h2,
+.tablechild .head h2 {
+  float: left;
+}
+.tableparent .head span.buttons,
+.tablechild .head span.buttons {
+  float: right;
+  margin-bottom: 5px;
+}
+.tableparent .head span.buttons a,
+.tablechild .head span.buttons a {
+  margin: 0px 3px 3px 0px;
+}
+.tableparent .head span.buttons a[name='save'],
+.tablechild .head span.buttons a[name='save'],
+.tableparent .head span.buttons a[name='cancel'],
+.tablechild .head span.buttons a[name='cancel'] {
+  margin: 0px 3px 3px 0px;
+  display: none;
+}
+.tableparent .head span.inline-search,
+.tablechild .head span.inline-search {
+  display: none;
+  float: right;
+  clear: right;
+}
+.tableparent .head span.inline-search form input,
+.tablechild .head span.inline-search form input {
+  box-shadow: 0px;
+  margin-bottom: 0px;
+  padding-right: 0px;
+  border-right-width: 0px;
+  border-radius: 5px 0 0 5px;
+}
+.tableparent .head span.inline-search form select,
+.tablechild .head span.inline-search form select {
+  margin-bottom: 0px;
+  border-left-width: 1px;
+  padding-left: 0px;
+  margin-left: -5px;
+}
+.tableparent .head span.inline-search form button,
+.tablechild .head span.inline-search form button {
+  margin-left: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 6px;
+  border-bottom-width: 1px;
+  border-top-width: 1px;
+  padding-bottom: 6px;
+}
+.tableparent .head span.tableoptions,
+.tablechild .head span.tableoptions {
+  display: none;
+  float: right;
+  clear: right;
+}
+.tableparent .head span.tableoptions form div.input-prepend,
+.tablechild .head span.tableoptions form div.input-prepend {
+  display: inline-block;
+}
+.tableparent .head span.tableoptions form div.input-prepend input,
+.tablechild .head span.tableoptions form div.input-prepend input {
+  margin-bottom: 0px;
+}
+.tableparent .head span.tableoptions form a,
+.tablechild .head span.tableoptions form a {
+  display: inline-block;
+}
+.tableparent .body table,
+.tablechild .body table {
+  margin-top: 0px;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.selected td {
+  background-color: #C2DFFF!important;
+}
+.summary {
+  display: table;
+  margin: 0 0 20px;
+  padding: 0;
+  width: 100%;
+}
+.summary ul {
+  display: table-row;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+.summary ul li {
+  border-right: 1px solid #EEEEEE;
+  display: table-cell;
+  margin: 0;
+  padding: 19px;
+}
+.summary ul li a {
+  color: #000000;
+  display: block;
+  font-size: 1.2em;
+  line-height: 1.4em;
+  text-transform: uppercase;
+}
+.summary ul li a .count {
+  display: block;
+  font-size: 1.75em;
+  font-weight: bold;
+}
+div.child {
+  display: none;
+}
+table.detail {
+  display: none;
+}
+.modal {
+  display: none;
+}
