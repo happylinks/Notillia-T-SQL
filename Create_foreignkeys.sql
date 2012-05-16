@@ -1,18 +1,4 @@
 
-
-
-DECLARE @String VARCHAR(MAX); SET @String = '';
-SELECT	@String += 'ALTER TABLE ' + FK.Master_Table + CHAR(10) + 
-			CHAR(9) + ' ADD CONSTRAINT ' + FK.Constraint_Name + ' FOREING KEY (' + Notillia.fnGetMasterColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ') ' + CHAR(10) + 
-				CHAR(9) + CHAR(9) + 'REFERENCES ' + FK.Child_Table + ' (' + Notillia.fnGetChildColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ')' + CHAR(10) + 
-					CHAR(9) + CHAR(9) + CHAR(9) + ' ON CASCADE ' + FK.Update_Rule + CHAR(10) + 
-					CHAR(9) + CHAR(9) + CHAR(9) + ' ON DELETE	' + FK.Delete_Rule + CHAR(10) + CHAR(10)
-				FROM Notillia.Foreignkeys FK
-PRINT @String;
-
-
-
-
 /*==============================================================*/
 /* UDF: Notillia.fnGetMasterColumnsForForeignKey                */
 /*		Creates a string with all Master columns. Separated     */
@@ -29,7 +15,7 @@ CREATE FUNCTION Notillia.fnGetMasterColumnsForForeignKey (@Schema VARCHAR(MAX), 
 	SET @Return = LEFT(@Return, LEN(@Return) - 1);
 	RETURN @Return;
 END
-
+GO
 
 /*==============================================================*/
 /* UDF: Notillia.fnGetChildColumnsForForeignKey                 */
@@ -46,4 +32,29 @@ CREATE FUNCTION Notillia.fnGetChildColumnsForForeignKey (@Schema VARCHAR(MAX), @
 	SET @Return = LEFT(@Return, LEN(@Return) - 1);
 	RETURN @Return;
 END
+GO
 
+/*==============================================================*/
+/* PROC: Notillia.createMysqlFkFile                             */
+/*		Creates a MySQL Foreign key file and writes it to the   */
+/*		C:\ directory				    						*/
+/*==============================================================*/
+
+CREATE PROCEDURE Notillia.createMysqlFkFile
+AS
+BEGIN
+	DECLARE @String VARCHAR(MAX); SET @String = '';
+	SELECT	@String += 'ALTER TABLE ' + FK.Master_Table + CHAR(10) + 
+				CHAR(9) + ' ADD CONSTRAINT ' + FK.Constraint_Name + ' FOREING KEY (' + Notillia.fnGetMasterColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ') ' + CHAR(10) + 
+					CHAR(9) + CHAR(9) + 'REFERENCES ' + FK.Child_Table + ' (' + Notillia.fnGetChildColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ')' + CHAR(10) + 
+						CHAR(9) + CHAR(9) + CHAR(9) + ' ON CASCADE ' + FK.Update_Rule + CHAR(10) + 
+						CHAR(9) + CHAR(9) + CHAR(9) + ' ON DELETE	' + FK.Delete_Rule + CHAR(10) + CHAR(10)
+					FROM Notillia.Foreignkeys FK
+	PRINT @String;
+	EXECUTE Notillia.procWriteStringToFile @String,'C:\','fk.sql'
+END
+GO
+
+
+/*==============================================================*/
+EXECUTE Notillia.createMysqlFkFile
