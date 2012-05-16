@@ -50,3 +50,6 @@ END
 EXECUTE  sp_OADestroy @objTextStream
 EXECUTE sp_OADestroy @objTextStream
 END
+
+--Test
+EXECUTE Notillia.procWriteStringToFile 'Hello world mijn naam is faggot maikel', 'C:\', 'maikel.php';
