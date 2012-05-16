@@ -15,8 +15,8 @@ PRINT @String;
 
 /*==============================================================*/
 /* UDF: Notillia.fnGetMasterColumnsForForeignKey                */
-/*		Plaatst alle Master kolommen in een string. Gescheiden  */
-/*		door ','												*/
+/*		Creates a string with all Master columns. Separated     */
+/*		by: ','.					    						*/
 /*==============================================================*/
 
 CREATE FUNCTION Notillia.fnGetMasterColumnsForForeignKey (@Schema VARCHAR(MAX), @Constraint_Name VARCHAR(MAX)) RETURNS VARCHAR(MAX) AS BEGIN
@@ -33,8 +33,8 @@ END
 
 /*==============================================================*/
 /* UDF: Notillia.fnGetChildColumnsForForeignKey                 */
-/*		Plaatst alle Child kolommen in een string. Gescheiden   */
-/*		door ','												*/
+/*		Creates a string with all Child columns. Separated      */
+/*		by: ','.												*/
 /*==============================================================*/
 CREATE FUNCTION Notillia.fnGetChildColumnsForForeignKey (@Schema VARCHAR(MAX), @Constraint_Name VARCHAR(MAX)) RETURNS VARCHAR(MAX) AS BEGIN
 	DECLARE @Return VARCHAR(MAX); SET @Return = '';
