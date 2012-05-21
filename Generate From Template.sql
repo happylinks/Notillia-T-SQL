@@ -1,5 +1,3 @@
--- DROP TABLE Notillia.Tags;
--- DROP TABLE Notillia.Templates;
 --Database(s) and schema(s):
 USE muziekdatabase;
 GO
@@ -37,6 +35,7 @@ END CATCH
 /**  -----------------------------------------------------------------
   *			TEST DATA
   */ -----------------------------------------------------------------
+DELETE FROM Notillia.Templates;
 INSERT INTO Notillia.Templates
 VALUES (
 		'test',
@@ -44,6 +43,7 @@ VALUES (
 		'/BLABLA TEMPLATE {{columnoptions}} BLABLA TEMPLATE/',
 		''
 		);
+DELETE FROM Notillia.Tags;
 INSERT INTO Notillia.Tags
 VALUES (
 		'test',
