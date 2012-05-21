@@ -105,10 +105,11 @@ GO
 --FK's
 CREATE VIEW Notillia.ForeignKeyColumns AS
 SELECT SCHEMA_NAME(fk.schema_id) AS 'Schema', fk.name AS 'Constraint_Name',
-	   OBJECT_NAME(fk.parent_object_id) AS 'Master_Table', COL_NAME(fkc.parent_object_id, fkc.parent_column_id) AS 'Master_Column', 
-	   OBJECT_NAME (fk.referenced_object_id) AS 'Child_Table', COL_NAME(fkc.referenced_object_id, fkc.referenced_column_id) AS 'Child_Column'
+	   OBJECT_NAME(fk.parent_object_id) AS 'Child_Table', COL_NAME(fkc.parent_object_id, fkc.parent_column_id) AS 'Child_Column', 
+	   OBJECT_NAME (fk.referenced_object_id) AS 'Master_Table', COL_NAME(fkc.referenced_object_id, fkc.referenced_column_id) AS 'Master_Column'
 FROM sys.foreign_keys fk
 	INNER JOIN sys.foreign_key_columns fkc ON fk.object_id = fkc.constraint_object_id
+WHERE SCHEMA_NAME(fk.schema_id) != 'Notillia'
 GO
 
 SELECT * FROM Notillia.ConstraintColumns;

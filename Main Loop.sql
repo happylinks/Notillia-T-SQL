@@ -109,13 +109,20 @@ INSERT INTO Notillia.Folders (Name, [Master])
 VALUES ('{#PROJECTNAME#}', ''),
 	   ('app', '{#PROJECTNAME#}'),
 	   ('config', '{#PROJECTNAME#}'),
-	   ('tmp', '{#PROJECTNAME#}'),
 	   ('lib', '{#PROJECTNAME#}'),
+	   ('tmp', '{#PROJECTNAME#}'),
 	   ('Controllers', 'app'),
 	   ('Views', 'app'),
 	   ('webroot', 'app'),
 	   ('css', 'webroot'),
 	   ('img', 'webroot'),
-	   ('js', 'webroot'),
-	   ('less', 'webroot')
-	   
+	   ('js', 'webroot')
+	  
+SELECT * FROM Notillia.Tables
+
+(@TableName)
+SELECT c.Column_Name, c.Data_Type, c.IS_NULLable FROM Notillia.Columns c WHERE Table_Name = 'Stuk' ORDER BY Ordinal_Position ASC
+
+SELECT * FROM Notillia.ForeignKeys WHERE Master_Table = 'Stuk'
+SELECT * FROM Notillia.ForeignKeyColumns WHERE Master_Table = 'Stuk'
+
