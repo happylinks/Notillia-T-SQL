@@ -2,7 +2,6 @@
 USE muziekdatabase;
 GO
 
-
 BEGIN TRY
 	/**
 	  *	Template table with all the templates for the CRUD application
@@ -11,7 +10,8 @@ BEGIN TRY
 		name		varchar(25)		not null,
 		description varchar(120)	not null,
 		source		text			not null,
-		path		varchar(50)		not null,
+		path		varchar(255)	not null,
+		filename	varchar(50)		not null,
 		constraint PK_templates primary key  (name),
 	);
 	/**
@@ -35,15 +35,24 @@ END CATCH
 /**  -----------------------------------------------------------------
   *			TEST DATA
   */ -----------------------------------------------------------------
+DELETE FROM Notillia.Tags;
 DELETE FROM Notillia.Templates;
+
 INSERT INTO Notillia.Templates
 VALUES (
 		'test',
 		'Testing templating',
 		'/BLABLA TEMPLATE {{columnoptions}} BLABLA TEMPLATE/',
-		''
+		'app\Views\{{TableName}}',
+		'index.html'
+		),
+		(
+		'controllerTest',
+		'Testing templating',
+		'/BLABLA TEMPLATE {{columnoptions}} BLABLA TEMPLATE/',
+		'app\Controller',
+		'{{TableName}}.php'
 		);
-DELETE FROM Notillia.Tags;
 INSERT INTO Notillia.Tags
 VALUES (
 		'test',
@@ -52,7 +61,15 @@ VALUES (
 		'{{columnoptions}}',
 		'<option value="{{notillia_2}}">{{notillia_1}}</option>',
 		'SELECT Column_Name,Table_Name,1,1,1 FROM Notillia.Columns WHERE table_name = ''{{TableName}}'''
-);
+		),
+		(
+		'controllerTest',
+		'columnoptions',
+		'Option tags for each column',
+		'{{columnoptions}}',
+		'<option value="{{notillia_2}}">{{notillia_1}}</option>',
+		'SELECT Column_Name,Table_Name,1,1,1 FROM Notillia.Columns WHERE table_name = ''{{TableName}}'''
+		);
 
 /**  -----------------------------------------------------------------
   *			END OF TEST DATA
@@ -71,10 +88,11 @@ BEGIN
 	DECLARE @template_name VARCHAR(25)
 	DECLARE @template_source VARCHAR(max)
 	DECLARE @template_path VARCHAR(50)
+	DECLARE @template_fileName VARCHAR(255)
 	DECLARE notillia_templates CURSOR FOR 
-		SELECT name, source, path FROM Notillia.Templates
+		SELECT name, source, path, filename FROM Notillia.Templates
 	OPEN notillia_templates
-	FETCH NEXT FROM notillia_templates INTO @template_name,@template_source,@template_path
+	FETCH NEXT FROM notillia_templates INTO @template_name, @template_source, @template_path, @template_fileName
 	WHILE @@FETCH_STATUS = 0
 	BEGIN
 		DECLARE @template_output NVARCHAR(max)
@@ -119,14 +137,26 @@ BEGIN
 			EXEC sp_executesql @query, @ParamDefinition, @tag_result = @template_content OUTPUT
 			
 			SET @template_output = REPLACE(@template_source,@tag_tag,@template_content);
-			PRINT @template_output;
+			/*
+					CREATE FILES
+			*/
+			DECLARE @fileName VARCHAR(255) = REPLACE(@template_fileName, '{{TableName}}', @table_name);
+			DECLARE @filePath VARCHAR(255) = REPLACE(@template_path, '{{TableName}}', @table_name);
+			DECLARE @CreateFolderResult BIT;
+
+
+			EXEC Notillia.procCreateFolderWithCMD @filePath, 'C:', @CreateFolderResult OUTPUT;
+			
+			
+			-- Write file to Disk
+			EXEC Notillia.procWriteStringToFile @template_output, @filePath, @fileName;
 			
 			FETCH NEXT FROM notillia_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query
 		END
 		CLOSE notillia_tags
 		DEALLOCATE notillia_tags
 		
-		FETCH NEXT FROM notillia_templates INTO @template_name,@template_source,@template_path
+		FETCH NEXT FROM notillia_templates INTO @template_name,@template_source,@template_path,@template_fileName
 	END
 	CLOSE notillia_templates
 	DEALLOCATE notillia_templates

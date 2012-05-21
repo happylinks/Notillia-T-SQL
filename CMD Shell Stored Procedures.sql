@@ -9,7 +9,7 @@ GO
 **/
 CREATE PROCEDURE Notillia.procExecuteCMDShell (@Commando VARCHAR(8000), @return BIT OUTPUT) AS BEGIN
 	EXECUTE Notillia.procEnableXP_CMDShell;
-	SET @Content = Notillia.foPrepareCMDContent(@Content);
+	SET @Commando = Notillia.foPrepareCMDContent(@Commando);
 	EXECUTE @return = MASTER.dbo.xp_cmdshell @Commando;
 	EXECUTE Notillia.procDisableXP_CMDShell;
 	

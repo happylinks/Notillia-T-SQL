@@ -18,6 +18,8 @@ DECLARE  @objFileSystem INT
 
 SET NOCOUNT ON;
 
+EXECUTE Notillia.procEnableOLEAutomationProcedures;
+
 SELECT @strErrorMessage='opening the File System Object';
 EXECUTE @hr = sp_OACreate  'Scripting.FileSystemObject' , @objFileSystem OUT;
 
@@ -49,4 +51,6 @@ IF @hr<>0 BEGIN
 END
 EXECUTE  sp_OADestroy @objTextStream
 EXECUTE sp_OADestroy @objTextStream
+
+EXECUTE Notillia.procDisableOLEAutomationProcedures;
 END
