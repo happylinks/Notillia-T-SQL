@@ -2,44 +2,52 @@ USE muziekdatabase
 
 EXEC generateMySql
 
+create schema Notillia
+/*==============================================================
+MSSQL database to MYSQL DDL script converter 
+
+Views needs to be generated before executing this script
+	
+@Author Bas van der Zandt & Jeroen Verseput (Foreign Keys)
+@Version 1.0										
+==============================================================*/
+
 /*==============================================================*/
 /* SP: the starting point for generating the MySql script												*/
 /*==============================================================*/
 
-ALTER PROC generateMySQL
+CREATE PROC generateMySQL
 AS BEGIN
-
-PRINT dbo.generateAlternativeKeys('Instrument')
 	
- DECLARE @CreateDatabase VARCHAR(MAX); SET @CreateDatabase = '';
+ DECLARE @CreateDatabase NVARCHAR(MAX); SET @CreateDatabase = '';
 SELECT @CreateDatabase += sub.Clause
 FROM (SELECT CASE t.[Schema] WHEN 'dbo' THEN '' ELSE t.[Schema] + '.' END + t.[Database] AS 'Clause' FROM Notillia.Tables t UNION
 SELECT CASE v.[Schema] WHEN 'dbo' THEN '' ELSE v.[Schema] + '.' END + v.[Database] AS 'Clause' FROM Notillia.Views v) sub
 
 PRINT 'CREATE DATABASE `' +  @CreateDatabase + '`; ' + CHAR(10) + 'USE DATABASE `' + @CreateDatabase + '`;' + CHAR(10)
 
-PRINT dbo.generateCreateTable(); 
+PRINT Notillia.generateCreateTable(); 
+exec notillia.createMySqlFKFile;
    	
  END
 
-
+GO
 /*==============================================================
  UDF: Generate 'create table' statements including the
 columns with the correct data types and primary and alternative keys
 @return varchar(max) All the create table statements in a long
 					String seperated with line breaks
 ==============================================================*/
-ALTER FUNCTION generateCreateTable()
+CREATE FUNCTION Notillia.generateCreateTable()
 RETURNS varchar(MAX)
 AS BEGIN
   DECLARE @tableOutput VARCHAR(max)
  
    SET @tableOutput = (SELECT 'CREATE TABLE `' + t.Table_Name + '`( '
-    + CHAR(10) + dbo.getColumnsFromTable(t.Table_Name) + CHAR(10) + dbo.generatePrimaryKeys(t.table_name)+
-     CHAR(10) + dbo.generateAlternativeKeys(T.table_name) + CHAR(10) + '); ' + CHAR(10)
+    + CHAR(10) + Notillia.getColumnsFromTable(t.Table_Name) + CHAR(10) + Notillia.getTableConstraints(t.table_name) + CHAR(10) + '); ' + CHAR(10)
    FROM Notillia.Tables t 
    FOR XML PATH(''))
-
+   
    RETURN @tableOutput
 END    
 go
@@ -51,13 +59,13 @@ go
  @return varchar(max) the columns with datatypes, seperated by
 					comma's in a long string
 ==============================================================*/
-ALTER FUNCTION getColumnsFromTable(@tableName VARCHAR(max))
+CREATE FUNCTION Notillia.getColumnsFromTable(@tableName VARCHAR(max))
 RETURNS VARCHAR(max)
 AS BEGIN
    	
 DECLARE @output VARCHAR(max);
    	
-SET @output = (SELECT ' `' + c.Column_Name + '` ' + dbo.convertDataType(@tablename, c.Column_Name) + ',' + CHAR(10)
+SET @output = (SELECT ' `' + c.Column_Name + '` ' + notillia.convertDataType(@tablename, c.Column_Name) + ',' + CHAR(10)
 FROM Notillia.Columns c
 WHERE Table_Name = @tablename
 FOR XML PATH(''))
@@ -73,7 +81,7 @@ FOR XML PATH(''))
  @param varchar(max) @columnName The column of the table
  @return varchar(max) The converted datatype
 ==============================================================*/
- ALTER FUNCTION convertDataType(@tableName VARCHAR(MAX), @columnName VARCHAR(max))
+ ALTER FUNCTION Notillia.convertDataType(@tableName VARCHAR(MAX), @columnName VARCHAR(max))
  RETURNS VARCHAR(max) AS BEGIN
  
  DECLARE @output VARCHAR(max);
@@ -84,8 +92,8 @@ SET @output = (SELECT CASE Data_type
  WHEN 'numeric' THEN 'NUMERIC' + '(' + CAST(Numeric_Precision AS VARCHAR(max)) +  ', ' + CAST(numeric_scale AS VARCHAR(max)) + ')'
  WHEN 'char' THEN 'CHAR' + '(' + CAST(Character_Maximum_Length AS VARCHAR(max)) + ')'
  WHEN 'datetime' THEN 'DATETIME'
- ELSE  Data_Type + ' datatype niet bekend!'
- END + CASE IS_NULLable WHEN 'NO' THEN ' NOT NULL' ELSE ' NULL' END
+ ELSE  Data_Type + '-- datatype may not be converted correctly'
+ END + Notillia.generateDefaults(@columnName) + CASE IS_NULLABLE WHEN 'NO' THEN ' NOT NULL' ELSE ' NULL' END
  FROM Notillia.COLUMNS 
  WHERE Table_Name = @tableName AND Column_Name = @columnName
  FOR XML PATH(''))
@@ -102,7 +110,7 @@ SET @output = (SELECT CASE Data_type
 @param varchar(max) @tableName The table to get the PK's from
 @return varchar(max) All the PK columns seperated by comma's
 ==============================================================*/
-ALTER FUNCTION getPrimaryKeyColumns(@tablename varchar(MAX))
+CREATE FUNCTION Notillia.getPrimaryKeyColumns(@tablename varchar(MAX))
 RETURNS varchar(MAX)
 AS BEGIN
 DECLARE @output VARCHAR(max);
@@ -121,12 +129,12 @@ GO
  @param varchar(max) @tableName The specified table
  @return varchar(max) The constraint rule for the specified table
 ==============================================================*/
-CREATE FUNCTION generatePrimaryKeys(@tableName varchar(MAX))
+CREATE FUNCTION Notillia.generatePrimaryKeys(@tableName varchar(MAX))
 RETURNS varchar(MAX)
 AS BEGIN
    DECLARE	@output varchar(MAX)
    
- SET @output =	(SELECT 'CONSTRAINT ' + Constraint_Name + ' PRIMARY KEY (' + dbo.getPrimaryKeyColumns(table_name)  + ')'
+ SET @output =	(SELECT 'CONSTRAINT ' + Constraint_Name + ' PRIMARY KEY (' + notillia.getPrimaryKeyColumns(table_name)  + ')'
 FROM Notillia.PrimaryKeys 
 WHERE Table_Name = @tableName
 FOR XML PATH('')
@@ -143,7 +151,7 @@ GO
 @param varchar(max) @tableName The table to get the AK's from
 @return varchar(max) All the AK columns seperated by comma's
 ==============================================================*/
-ALTER FUNCTION getAlternativeKeyColumns(@tablename varchar(MAX))
+CREATE FUNCTION Notillia.getAlternativeKeyColumns(@tablename varchar(MAX))
 RETURNS varchar(MAX)
 AS BEGIN
 DECLARE @output VARCHAR(max);
@@ -164,12 +172,12 @@ GO
  @param varchar(max) @tableName The specified table
  @return varchar(max) The constraint rule for the specified table
 ==============================================================*/
-ALTER FUNCTION generateAlternativeKeys(@tableName varchar(MAX))
+CREATE FUNCTION Notillia.generateAlternativeKeys(@tableName varchar(MAX))
 RETURNS varchar(MAX)
 AS BEGIN
    DECLARE	@output varchar(MAX)
    
- SET @output =	(SELECT 'CONSTRAINT ' + Constraint_Name + ' UNIQUE (' + dbo.getAlternativeKeyColumns(table_name)  + ')'
+ SET @output =	(SELECT 'CONSTRAINT ' + Constraint_Name + ' UNIQUE (' + notillia.getAlternativeKeyColumns(table_name)  + ')'
 FROM Notillia.Uniques 
 WHERE Table_Name = @tableName
 FOR XML PATH('')
@@ -180,7 +188,119 @@ IF(@output IS NOT NULL) BEGIN
 	SET @Return = @output;	
 END
 RETURN @Return;
- 	
-   END
+END
    
 GO
+
+CREATE FUNCTION Notillia.getTableConstraints(@tableName VARCHAR(max))
+RETURNS VARCHAR(MAX)
+AS BEGIN
+
+DECLARE @Output VARCHAR(MAX) = '';
+DECLARE @AKkey VARCHAR(MAX) = ''
+
+set @Output += notillia.generatePrimaryKeys(@tableName) ;
+
+set @AKkey += notillia.generateAlternativeKeys(@tableName);
+
+IF(@AKkey <> '') BEGIN
+SET @Output += ', ' + CHAR(10) + @AKkey;
+END
+
+RETURN @Output;
+END
+GO
+
+CREATE FUNCTION Notillia.generateDefaults(@ColumnName NVARCHAR(MAX))
+RETURNS NVARCHAR(MAX)
+AS BEGIN
+DECLARE @output NVARCHAR(MAX)
+
+SET @output = (select ' DEFAULT ' +  RIGHT(LEFT(column_default , LEN(column_default) - 1), LEN(column_default) - 2)
+from notillia.columns
+WHERE column_Name = @ColumnName
+for XML PATH(''))
+
+RETURN @output
+END
+GO
+
+
+/* WORK IN PROGRESS
+CREATE FUNCTION generateIdentity(@columnName NVARCHAR(MAX))
+RETURNS NVARCHAR(MAX)
+AS BEGIN
+
+DECLARE @output NVARCHAR(MAX)
+
+SET @output = (select ' AUTO-INCREMENT '
+from Notillia.Columns
+where (columnproperty(object_id(table_name), column_name,'IsIdentity') = 1)
+AND Column_Name = @columnName)
+
+RETURN @output
+END
+GO
+*/
+
+
+/*==============================================================*/
+/* UDF: Notillia.fnGetMasterColumnsForForeignKey                */
+/*		Creates a string with all Master columns. Separated     */
+/*		by: ','.					    						*/
+/*==============================================================*/
+
+CREATE FUNCTION Notillia.fnGetMasterColumnsForForeignKey (@Schema VARCHAR(MAX), @Constraint_Name VARCHAR(MAX)) RETURNS VARCHAR(MAX) AS BEGIN
+	DECLARE @Return VARCHAR(MAX); SET @Return = '';
+	SELECT @Return += '`' + Master_Column + '`,' 
+	FROM Notillia.ForeignKeyColumns fkc 
+	WHERE fkc.Constraint_Name = @Constraint_Name AND fkc.[Schema] = @Schema
+	ORDER BY fkc.Master_Column, fkc.Child_Column DESC
+	SET @Return = LEFT(@Return, LEN(@Return) - 1);
+	RETURN @Return;
+END
+GO
+
+/*==============================================================*/
+/* UDF: Notillia.fnGetChildColumnsForForeignKey                 */
+/*		Creates a string with all Child columns. Separated      */
+/*		by: ','.												*/
+/*==============================================================*/
+CREATE FUNCTION Notillia.fnGetChildColumnsForForeignKey (@Schema VARCHAR(MAX), @Constraint_Name VARCHAR(MAX)) RETURNS VARCHAR(MAX) AS BEGIN
+	DECLARE @Return VARCHAR(MAX); SET @Return = '';
+	SELECT @Return += '`' + Child_Column + '`,' 
+	FROM Notillia.ForeignKeyColumns fkc 
+	WHERE fkc.Constraint_Name = @Constraint_Name AND fkc.[Schema] = @Schema
+	ORDER BY fkc.Master_Column, fkc.Child_Column DESC
+	SET @Return = LEFT(@Return, LEN(@Return) - 1);
+	RETURN @Return;
+END
+GO
+
+/*==============================================================*/
+/* PROC: Notillia.createMysqlFkFile                             */
+/*		Creates a MySQL Foreign key file and writes it to the   */
+/*		C:\ directory				    						*/
+/*==============================================================*/
+
+CREATE PROCEDURE Notillia.createMysqlFkFile
+AS
+BEGIN
+	DECLARE @String VARCHAR(MAX); SET @String = '';
+	SELECT	@String += 'ALTER TABLE `' + FK.Master_Table + '`' + CHAR(10) + 
+				CHAR(9) + ' ADD CONSTRAINT ' + FK.Constraint_Name + ' FOREING KEY (' + Notillia.fnGetMasterColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ') ' + CHAR(10) + 
+					CHAR(9) + CHAR(9) + 'REFERENCES `' + FK.Child_Table + '` (' + Notillia.fnGetChildColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ')' + CHAR(10) + 
+						CHAR(9) + CHAR(9) + CHAR(9) + ' ON CASCADE ' + FK.Update_Rule + CHAR(10) + 
+						CHAR(9) + CHAR(9) + CHAR(9) + ' ON DELETE	' + FK.Delete_Rule + CHAR(10) + CHAR(10)
+					FROM Notillia.Foreignkeys FK
+	PRINT @String;
+	--EXECUTE Notillia.procWriteStringToFile @String,'C:\','fk.sql'
+END
+GO
+
+/*
+CREATE TABLE test(
+nummer INT IDENTITY(1, 1) NOT NULL,
+tekstje VARCHAR(100) DEFAULT 'hoi' NULL
+)
+*/
