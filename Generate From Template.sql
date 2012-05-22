@@ -2,80 +2,7 @@
 USE muziekdatabase;
 GO
 
-BEGIN TRY
-	/**
-	  *	Template table with all the templates for the CRUD application
-	  */
-	CREATE TABLE Notillia.Templates(
-		name		varchar(25)		not null,
-		description varchar(120)	not null,
-		source		text			not null,
-		path		varchar(255)	not null,
-		filename	varchar(50)		not null,
-		constraint PK_templates primary key  (name),
-	);
-	/**
-	  *	Tag table, contains all the replacement tags for an certain template.
-	  */
-	CREATE TABLE Notillia.Tags(
-		template_name varchar(25)	not null,
-		name		varchar(25)		not null,
-		description varchar(120)	not null,
-		tag			varchar(40)		not null,
-		source		text			not null,
-		query		varchar(max)	not null,
-		constraint PK_tags primary key  (template_name,name),
-		constraint FK_template foreign key(template_name) REFERENCES Notillia.Templates(name) ON UPDATE NO ACTION ON DELETE NO ACTION
-	);
-END TRY
-BEGIN CATCH
-	RAISERROR ('Tabellen bestaan al!', 16, 1);
-END CATCH
-
-/**  -----------------------------------------------------------------
-  *			TEST DATA
-  */ -----------------------------------------------------------------
-DELETE FROM Notillia.Tags;
-DELETE FROM Notillia.Templates;
-
-INSERT INTO Notillia.Templates
-VALUES (
-		'test',
-		'Testing templating',
-		'/BLABLA TEMPLATE {{columnoptions}} BLABLA TEMPLATE/',
-		'app\Views\{{TableName}}',
-		'index.html'
-		),
-		(
-		'controllerTest',
-		'Testing templating',
-		'/BLABLA TEMPLATE {{columnoptions}} BLABLA TEMPLATE/',
-		'app\Controller',
-		'{{TableName}}.php'
-		);
-INSERT INTO Notillia.Tags
-VALUES (
-		'test',
-		'columnoptions',
-		'Option tags for each column',
-		'{{columnoptions}}',
-		'<option value="{{notillia_2}}">{{notillia_1}}</option>',
-		'SELECT Column_Name,Table_Name,1,1,1 FROM Notillia.Columns WHERE table_name = ''{{TableName}}'''
-		),
-		(
-		'controllerTest',
-		'columnoptions',
-		'Option tags for each column',
-		'{{columnoptions}}',
-		'<option value="{{notillia_2}}">{{notillia_1}}</option>',
-		'SELECT Column_Name,Table_Name,1,1,1 FROM Notillia.Columns WHERE table_name = ''{{TableName}}'''
-		);
-
-/**  -----------------------------------------------------------------
-  *			END OF TEST DATA
-  */ -----------------------------------------------------------------
-
-
+DECLARE @driveLetter VARCHAR(2) = 'C:';
 DECLARE @table_name VARCHAR(50)
 DECLARE notillia_tables CURSOR FOR 
 	SELECT table_name FROM Notillia.Tables
@@ -137,19 +64,23 @@ BEGIN
 			EXEC sp_executesql @query, @ParamDefinition, @tag_result = @template_content OUTPUT
 			
 			SET @template_output = REPLACE(@template_source,@tag_tag,@template_content);
+			-- General rule: {{TableName}} becomes the name of the Table in any layout.
+			SET @template_output = REPLACE(@template_output, '{{TableName}}', @table_name);
+
 			/*
-					CREATE FILES
+			*	Prepare and make the file (path) to write the template to the file system.
 			*/
 			DECLARE @fileName VARCHAR(255) = REPLACE(@template_fileName, '{{TableName}}', @table_name);
 			DECLARE @filePath VARCHAR(255) = REPLACE(@template_path, '{{TableName}}', @table_name);
+			DECLARE @fullFilePath VARCHAR(255) = @driveLetter + '\' + @filePath;
 			DECLARE @CreateFolderResult BIT;
 
 
-			EXEC Notillia.procCreateFolderWithCMD @filePath, 'C:', @CreateFolderResult OUTPUT;
+			EXEC Notillia.procCreateFolderWithCMD @filePath, @driveLetter, @CreateFolderResult OUTPUT;
 			
 			
 			-- Write file to Disk
-			EXEC Notillia.procWriteStringToFile @template_output, @filePath, @fileName;
+			EXEC Notillia.procWriteStringToFile @template_output, @fullFilePath, @fileName;
 			
 			FETCH NEXT FROM notillia_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query
 		END
