@@ -2,9 +2,9 @@
 USE muziekdatabase;
 GO
 
-DECLARE @driveLetter VARCHAR(2) = 'C:';
+DECLARE @driveLetter NVARCHAR(2) = 'C:';
 DECLARE @template_output NVARCHAR(max);
-DECLARE @table_name VARCHAR(50);
+DECLARE @table_name NVARCHAR(50);
 DECLARE notillia_tables CURSOR FOR 
 	SELECT table_name FROM Notillia.Tables
 
@@ -13,19 +13,22 @@ FETCH NEXT FROM notillia_tables INTO @table_name
 
 WHILE @@FETCH_STATUS = 0
 BEGIN
-	DECLARE @template_name VARCHAR(25);
-	DECLARE @template_source VARCHAR(max);
-	DECLARE @template_path VARCHAR(50);
-	DECLARE @template_fileName VARCHAR(255);
+	DECLARE @template_name NVARCHAR(25);
+	DECLARE @template_source NVARCHAR(max);
+	DECLARE @template_path NVARCHAR(50);
+	DECLARE @template_fileName NVARCHAR(255);
 	DECLARE notillia_templates CURSOR FOR 
 		SELECT name, source, path, filename FROM Notillia.Templates
 	OPEN notillia_templates
 	FETCH NEXT FROM notillia_templates INTO @template_name, @template_source, @template_path, @template_fileName
 	WHILE @@FETCH_STATUS = 0
 	BEGIN
-		DECLARE @tag_name VARCHAR(25);
-		DECLARE @tag_tag VARCHAR(40);
-		DECLARE @tag_source VARCHAR(max);
+		-- General rule: {{TableName}} becomes the name of the Table in any layout.
+		SET @template_output = REPLACE(@template_output, '{{TableName}}', @table_name);
+
+		DECLARE @tag_name NVARCHAR(25);
+		DECLARE @tag_tag NVARCHAR(40);
+		DECLARE @tag_source NVARCHAR(max);
 		DECLARE @tag_query NVARCHAR(max);
 		DECLARE notillia_tags CURSOR FOR 
 			SELECT name, tag, source, query FROM Notillia.Tags WHERE template_name = @template_name
@@ -33,7 +36,7 @@ BEGIN
 		FETCH NEXT FROM notillia_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
-			DECLARE @template_content NVARCHAR(MAX) = '';
+			DECLARE @tag_content NVARCHAR(MAX) = '';
 			DECLARE @ParamDefinition nvarchar(500);
 			SET @tag_query = REPLACE(@tag_query,'{{TableName}}',@table_name);
 			DECLARE @query NVARCHAR(max);
@@ -52,7 +55,7 @@ BEGIN
 					SET @tag_output = REPLACE(@tag_output,''{{notillia_1}}'',@notillia_1);
 					SET @tag_output = REPLACE(@tag_output,''{{notillia_2}}'',@notillia_2);
 					SET @tag_output = REPLACE(@tag_output,''{{notillia_3}}'',@notillia_3);
-					SET @tag_output = REPLACE(@tag_output,''{{notillia_4}}'',@notillia_4);
+					SET @tag_output = REPLACE(@tag_output,''{{not illia_4}}'',@notillia_4);
 					SET @tag_output = REPLACE(@tag_output,''{{notillia_5}}'',@notillia_5);
 					SET @tag_result = @tag_result + @tag_output;
 					
@@ -61,31 +64,32 @@ BEGIN
 				CLOSE notillia_dbresults
 				DEALLOCATE notillia_dbresults'
 			SET @ParamDefinition = N'@tag_result nvarchar(max) OUTPUT';
-			EXEC sp_executesql @query, @ParamDefinition, @tag_result = @template_content OUTPUT
-			
-			SET @template_output = REPLACE(@template_source,@tag_tag,@template_content);
-			-- General rule: {{TableName}} becomes the name of the Table in any layout.
-			SET @template_output = REPLACE(@template_output, '{{TableName}}', @table_name);
+			EXEC sp_executesql @query, @ParamDefinition, @tag_result = @tag_content OUTPUT
 
-			/*
-			*	Prepare and make the file (path) to write the template to the file system.
-			*/
-			DECLARE @fileName VARCHAR(255) = REPLACE(@template_fileName, '{{TableName}}', @table_name);
-			DECLARE @filePath VARCHAR(255) = REPLACE(@template_path, '{{TableName}}', @table_name);
-			DECLARE @fullFilePath VARCHAR(255) = @driveLetter + '\' + @filePath;
-			DECLARE @CreateFolderResult BIT;
-
-
-			EXEC Notillia.procCreateFolderWithCMD @filePath, @driveLetter, @CreateFolderResult OUTPUT;
-			
-			
-			-- Write file to Disk
-			EXEC Notillia.procWriteStringToFile @template_output, @fullFilePath, @fileName;
+			SET @template_output =  REPLACE(@template_source,@tag_tag,@tag_content);
 			
 			FETCH NEXT FROM notillia_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query
 		END
 		CLOSE notillia_tags;
 		DEALLOCATE notillia_tags;
+
+		
+
+
+		/*
+		*	Prepare and make the file (path) to write the template to the file system.
+		*/
+		DECLARE @fileName NVARCHAR(255) = REPLACE(@template_fileName, '{{TableName}}', @table_name);
+		DECLARE @filePath NVARCHAR(255) = REPLACE(@template_path, '{{TableName}}', @table_name);
+		DECLARE @fullFilePath NVARCHAR(255) = @driveLetter + '\' + @filePath;
+		DECLARE @CreateFolderResult BIT;
+
+
+		EXEC Notillia.procCreateFolderWithCMD @filePath, @driveLetter, @CreateFolderResult OUTPUT;
+			
+			
+		-- Write file to Disk
+		EXEC Notillia.procWriteStringToFile @template_output, @fullFilePath, @fileName;
 		
 		FETCH NEXT FROM notillia_templates INTO @template_name,@template_source,@template_path,@template_fileName
 	END
