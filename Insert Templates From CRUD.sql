@@ -19,12 +19,13 @@ BEGIN TRY
 	  *	Tag table, contains all the replacement tags for an certain template.
 	  */
 	CREATE TABLE Notillia.Tags(
-		template_name varchar(25)	not null,
-		name		varchar(25)		not null,
-		description varchar(120)	not null,
-		tag			varchar(40)		not null,
-		source		text			not null,
-		query		varchar(max)	not null,
+		id				bigint			not null	IDENTITY(1,1),
+		template_name	varchar(25)		not null,
+		name			varchar(25)		not null,
+		description		varchar(120)	not null,
+		tag				varchar(40)		not null,
+		source			text			not null,
+		query			varchar(max)	not null,
 		constraint PK_tags primary key  (template_name,name),
 		constraint FK_template foreign key(template_name) REFERENCES Notillia.Templates(name) ON UPDATE NO ACTION ON DELETE NO ACTION
 	);

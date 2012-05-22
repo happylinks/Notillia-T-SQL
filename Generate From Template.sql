@@ -36,37 +36,11 @@ BEGIN
 		FETCH NEXT FROM notillia_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
-			DECLARE @tag_content NVARCHAR(MAX) = '';
-			DECLARE @ParamDefinition nvarchar(500);
-			SET @tag_query = REPLACE(@tag_query,'{{TableName}}',@table_name);
-			DECLARE @query NVARCHAR(max);
-			SET @query = '
-				DECLARE @notillia_1 VARCHAR(max)
-				DECLARE @notillia_2 VARCHAR(max)
-				DECLARE @notillia_3 VARCHAR(max)
-				DECLARE @notillia_4 VARCHAR(max)
-				DECLARE @notillia_5 VARCHAR(max)
-				DECLARE notillia_dbresults CURSOR FOR ' + @tag_query + '
-				OPEN notillia_dbresults
-				FETCH NEXT FROM notillia_dbresults INTO @notillia_1,@notillia_2,@notillia_3,@notillia_4,@notillia_5
-				WHILE @@FETCH_STATUS = 0
-				BEGIN
-					DECLARE @tag_output VARCHAR(max) = '''+@tag_source+'''
-					SET @tag_output = REPLACE(@tag_output,''{{notillia_1}}'',@notillia_1);
-					SET @tag_output = REPLACE(@tag_output,''{{notillia_2}}'',@notillia_2);
-					SET @tag_output = REPLACE(@tag_output,''{{notillia_3}}'',@notillia_3);
-					SET @tag_output = REPLACE(@tag_output,''{{not illia_4}}'',@notillia_4);
-					SET @tag_output = REPLACE(@tag_output,''{{notillia_5}}'',@notillia_5);
-					SET @tag_result = @tag_result + @tag_output;
-					
-					FETCH NEXT FROM notillia_dbresults INTO @notillia_1,@notillia_2,@notillia_3,@notillia_4,@notillia_5
-				END
-				CLOSE notillia_dbresults
-				DEALLOCATE notillia_dbresults'
-			SET @ParamDefinition = N'@tag_result nvarchar(max) OUTPUT';
-			EXEC sp_executesql @query, @ParamDefinition, @tag_result = @tag_content OUTPUT
+			SET @template_source = REPLACE(@template_source, '{{TableName}}', @table_name);
+			EXEC Notillia.parseTag @tag_name, @tag_tag, @tag_source, @tag_query, @template_source, @template_name, @table_name, @output_out = @template_source OUTPUT
 
-			SET @template_output =  REPLACE(@template_source,@tag_tag,@tag_content);
+
+			-- SET @template_output =  REPLACE(@template_source,@tag_tag,@tag_result);
 			
 			FETCH NEXT FROM notillia_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query
 		END
@@ -89,7 +63,8 @@ BEGIN
 			
 			
 		-- Write file to Disk
-		EXEC Notillia.procWriteStringToFile @template_output, @fullFilePath, @fileName;
+		-- EXEC Notillia.procWriteStringToFile @template_output, @fullFilePath, @fileName;
+		PRINT @template_source;
 		
 		FETCH NEXT FROM notillia_templates INTO @template_name,@template_source,@template_path,@template_fileName
 	END
