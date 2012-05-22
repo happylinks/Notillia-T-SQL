@@ -3,7 +3,8 @@ USE muziekdatabase;
 GO
 
 DECLARE @driveLetter VARCHAR(2) = 'C:';
-DECLARE @table_name VARCHAR(50)
+DECLARE @template_output NVARCHAR(max);
+DECLARE @table_name VARCHAR(50);
 DECLARE notillia_tables CURSOR FOR 
 	SELECT table_name FROM Notillia.Tables
 
@@ -12,21 +13,20 @@ FETCH NEXT FROM notillia_tables INTO @table_name
 
 WHILE @@FETCH_STATUS = 0
 BEGIN
-	DECLARE @template_name VARCHAR(25)
-	DECLARE @template_source VARCHAR(max)
-	DECLARE @template_path VARCHAR(50)
-	DECLARE @template_fileName VARCHAR(255)
+	DECLARE @template_name VARCHAR(25);
+	DECLARE @template_source VARCHAR(max);
+	DECLARE @template_path VARCHAR(50);
+	DECLARE @template_fileName VARCHAR(255);
 	DECLARE notillia_templates CURSOR FOR 
 		SELECT name, source, path, filename FROM Notillia.Templates
 	OPEN notillia_templates
 	FETCH NEXT FROM notillia_templates INTO @template_name, @template_source, @template_path, @template_fileName
 	WHILE @@FETCH_STATUS = 0
 	BEGIN
-		DECLARE @template_output NVARCHAR(max)
-		DECLARE @tag_name VARCHAR(25)
-		DECLARE @tag_tag VARCHAR(40)
-		DECLARE @tag_source VARCHAR(max)
-		DECLARE @tag_query NVARCHAR(max)
+		DECLARE @tag_name VARCHAR(25);
+		DECLARE @tag_tag VARCHAR(40);
+		DECLARE @tag_source VARCHAR(max);
+		DECLARE @tag_query NVARCHAR(max);
 		DECLARE notillia_tags CURSOR FOR 
 			SELECT name, tag, source, query FROM Notillia.Tags WHERE template_name = @template_name
 		OPEN notillia_tags
@@ -84,16 +84,16 @@ BEGIN
 			
 			FETCH NEXT FROM notillia_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query
 		END
-		CLOSE notillia_tags
-		DEALLOCATE notillia_tags
+		CLOSE notillia_tags;
+		DEALLOCATE notillia_tags;
 		
 		FETCH NEXT FROM notillia_templates INTO @template_name,@template_source,@template_path,@template_fileName
 	END
-	CLOSE notillia_templates
-	DEALLOCATE notillia_templates
+	CLOSE notillia_templates;
+	DEALLOCATE notillia_templates;
 	
 	FETCH NEXT FROM notillia_tables INTO @table_name
 END
 
-CLOSE notillia_tables
-DEALLOCATE notillia_tables
+CLOSE notillia_tables;
+DEALLOCATE notillia_tables;
