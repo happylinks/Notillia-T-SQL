@@ -90,7 +90,7 @@ GO
 --Constraints Columns
 --PK's EN Unique's
 ALTER VIEW Notillia.ConstraintColumns AS
-SELECT DB_NAME() AS 'Database', s.name AS 'Schema', t.name AS 'Table_Name', i.name AS 'Constraint_Name', ic.column_id, ac.name AS 'Column_Name'
+SELECT DB_NAME() AS 'Database', s.name AS 'Schema', t.name AS 'Table_Name', i.name AS 'Constraint_Name', ic.column_id, ac.name AS 'Column_Name', ic.index_column_id AS 'Index_Column_Id'
 FROM sys.tables t
 	INNER JOIN sys.indexes i ON t.object_id = i.object_id
 	INNER JOIN sys.index_columns ic ON i.object_id = ic.object_id AND i.index_id = ic.index_id
