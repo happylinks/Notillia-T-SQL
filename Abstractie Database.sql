@@ -89,17 +89,15 @@ GO
 
 --Constraints Columns
 --PK's EN Unique's
-CREATE VIEW Notillia.ConstraintColumns AS
-SELECT cu.TABLE_CATALOG AS 'Database', cu.TABLE_SCHEMA AS 'Schema', cu.TABLE_NAME AS 'Table_Name', 
-	   cu.CONSTRAINT_NAME AS 'Constraint_Name', cu.COLUMN_NAME AS 'Column_Name'
-FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE cu
-	INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc ON cu.TABLE_CATALOG = tc.TABLE_CATALOG AND
-														  cu.TABLE_SCHEMA = tc.TABLE_SCHEMA AND
-														  cu.TABLE_NAME = tc.TABLE_NAME AND
-														  cu.CONSTRAINT_CATALOG = cu.CONSTRAINT_CATALOG AND
-														  cu.CONSTRAINT_SCHEMA = tc.CONSTRAINT_SCHEMA AND
-														  cu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME
-WHERE cu.CONSTRAINT_SCHEMA != 'Notillia' AND tc.CONSTRAINT_TYPE != 'FOREIGN KEY' AND tc.TABLE_NAME != 'sysdiagrams';
+ALTER VIEW Notillia.ConstraintColumns AS
+SELECT DB_NAME() AS 'Database', s.name AS 'Schema', t.name AS 'Table_Name', i.name AS 'Constraint_Name', ic.column_id, ac.name AS 'Column_Name'
+FROM sys.tables t
+	INNER JOIN sys.indexes i ON t.object_id = i.object_id
+	INNER JOIN sys.index_columns ic ON i.object_id = ic.object_id AND i.index_id = ic.index_id
+	INNER JOIN sys.all_columns ac ON t.object_id = ac.object_id and ic.column_id = ac.column_id
+	INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
+WHERE t.name != 'sysdiagrams' and s.name != 'Notillia' and t.type='u'
+--ORDER BY i.name, ic.index_column_id ASC
 GO
 
 --FK's
