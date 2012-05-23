@@ -16,9 +16,9 @@ BEGIN
 		DECLARE @tag_query NVARCHAR(max);
 		SET @output_out = @output_in;
 		DECLARE notillia_tags CURSOR FOR 
-			SELECT name, tag, source, query FROM Notillia.Tags WHERE template_name = @template_name ORDER BY id ASC
+			SELECT name, tag, source, query, beforeResult, afterResult FROM Notillia.Tags WHERE template_name = @template_name ORDER BY id ASC
 		OPEN notillia_tags
-		FETCH NEXT FROM notillia_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query
+		FETCH NEXT FROM notillia_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query,@tag_beforeResult,@tag_afterResult
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
 	
@@ -28,7 +28,7 @@ BEGIN
 
 		SET @tag_query = REPLACE(@tag_query, '{{TableName}}', @table_name);
 
-		SET @query = '
+		SET @query =  @tag_beforeResult +'
 			DECLARE @notillia_1 NVARCHAR(max);
 			DECLARE @notillia_2 NVARCHAR(max);
 			DECLARE @notillia_3 NVARCHAR(max);
@@ -53,12 +53,21 @@ BEGIN
 				FETCH NEXT FROM notillia_dbresults INTO @notillia_1,@notillia_2,@notillia_3,@notillia_4,@notillia_5,@notillia_6
 			END
 			CLOSE notillia_dbresults
-			DEALLOCATE notillia_dbresults'
+			DEALLOCATE notillia_dbresults
+			' + @tag_afterResult
 		SET @ParamDefinition = N'@tag_result nvarchar(max) OUTPUT';
 		EXEC sp_executesql @query, @ParamDefinition, @tag_result = @tag_result OUTPUT
 
 		DECLARE @backup_input_out NVARCHAR(max) = @output_out;
 		SET @output_out =  REPLACE(@output_out,@tag_tag,ISNULL(@tag_result, ''));
+
+
+		-- Check if the tag is found with an tag value.
+		DECLARE @check INT = CHARINDEX(LEFT(@tag_tag, ), @output_out);
+		IF @check <> 0
+			BEGIN
+				
+			END
 
 		-- If the content havent been changed means this tag isnt found in the template.
 		IF @output_out != @backup_input_out
@@ -70,7 +79,7 @@ BEGIN
 				SET @count_check = @count + 1;
 			END
 
-		FETCH NEXT FROM notillia_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query
+		FETCH NEXT FROM notillia_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query,@tag_beforeResult,@tag_afterResult
 		END
 		CLOSE notillia_tags;
 		DEALLOCATE notillia_tags;
