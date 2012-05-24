@@ -3,6 +3,8 @@ USE muziekdatabase;
 GO
 
 DECLARE @driveLetter NVARCHAR(2) = 'C:';
+DECLARE @database_name NVARCHAR(50) = 'muziekdatabase';
+DECLARE @schema_name NVARCHAR(50) = 'dbo';
 DECLARE @template_output NVARCHAR(max);
 DECLARE @table_name NVARCHAR(50);
 DECLARE notillia_tables CURSOR FOR 
@@ -28,7 +30,7 @@ BEGIN
 		DECLARE @i INT = 0;
 		WHILE(CHARINDEX('{{', @template_output) <> 0 AND @i < (SELECT COUNT(1) FROM Notillia.Tags))
 		BEGIN
-			EXEC Notillia.parseTag @template_output, @template_name, @table_name, @i, @output_out = @template_output OUTPUT, @count_check = @i OUTPUT
+			EXEC Notillia.parseTag @template_output, @template_name, @database_name, @schema_name, @table_name, @i, @output_out = @template_output OUTPUT, @count_check = @i OUTPUT
 		END
 			
 

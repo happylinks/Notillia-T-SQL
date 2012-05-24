@@ -7,7 +7,7 @@ DROP PROCEDURE Notillia.parseTag;
 
 GO
 
-CREATE PROCEDURE Notillia.parseTag @output_in NVARCHAR(max), @template_name NVARCHAR(25), @table_name NVARCHAR(50), @count INT, @output_out NVARCHAR(max) OUTPUT, @count_check INT OUTPUT
+CREATE PROCEDURE Notillia.parseTag @output_in NVARCHAR(max), @template_name NVARCHAR(25), @database_name NVARCHAR(50), @schema_name NVARCHAR(50), @table_name NVARCHAR(50), @count INT, @output_out NVARCHAR(max) OUTPUT, @count_check INT OUTPUT
 AS
 BEGIN
 		DECLARE @tag_name NVARCHAR(25);
@@ -23,6 +23,9 @@ BEGIN
 		FETCH NEXT FROM notillia_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query,@tag_beforeResult,@tag_afterResult
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
+			SET @tag_query = REPLACE(@tag_query, '{{DatabaseName}}', @database_name);
+			SET @tag_query = REPLACE(@tag_query, '{{SchemaName}}', @schema_name);
+			SET @tag_query = REPLACE(@tag_query, '{{TableName}}', @table_name);
 
 			-- Check if the tag is found with an tag value.
 			DECLARE @checkTagValue INT = CHARINDEX(LEFT(@tag_tag, LEN(@tag_tag) -2) + '=', @output_out);
@@ -40,8 +43,6 @@ BEGIN
 			DECLARE @tag_result NVARCHAR(MAX) = '';
 			DECLARE @ParamDefinition nvarchar(500);
 			DECLARE @query NVARCHAR(max);
-
-			SET @tag_query = REPLACE(@tag_query, '{{TableName}}', @table_name);
 
 			SET @query =  @tag_beforeResult +'
 				DECLARE @notillia_1 NVARCHAR(max);

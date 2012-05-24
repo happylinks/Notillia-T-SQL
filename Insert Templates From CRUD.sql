@@ -109,7 +109,7 @@ VALUES (
 			AS ''Case'', 1, 1, 1, 1, 1
 			FROM( SELECT c.Column_Name, c.Data_Type, ROW_NUMBER() OVER(ORDER BY c.[Schema], c.[Database], c.[Table_Name], c.[Column_Name] DESC) AS ''RowNumber''
 				  FROM Notillia.Columns c
-				  WHERE c.[Schema] = ''dbo'' AND c.[Database] = ''muziekdatabase'' AND c.Table_Name = ''{{TableName}}''
+				  WHERE c.[Schema] = ''{{SchemaName}}'' AND c.[Database] = ''{{DatabaseName}}'' AND c.Table_Name = ''{{TableName}}''
 			) d ', '', ''
 		),
 		(
@@ -138,7 +138,7 @@ VALUES (
 		ELSE ''<input class='''''' + c.Data_Type + '''''' type=''''text'''' name='''''' + c.Column_Name + '''''' value='''''''' />'' + CHAR(10) END +
 		''</div>'' + CHAR(10) + ''</div>'' + CHAR(10), 1, 1, 1, 1, 1
 		FROM Notillia.Columns c
-		WHERE c.[Schema] = ''dbo'' AND c.[Database] = ''muziekdatabase'' AND c.Table_Name = ''{{TableName}}''', '', ''
+		WHERE c.[Schema] = ''{{SchemaName}}'' AND c.[Database] = ''{{DatabaseName}}'' AND c.Table_Name = ''{{TableName}}''', '', ''
 		),
 		(
 		'HTML Table Layout',
@@ -264,6 +264,6 @@ VALUES (
 			AS ''Case'', 1, 1, 1, 1, 1
 			FROM( SELECT c.Column_Name, c.Data_Type, ROW_NUMBER() OVER(ORDER BY c.[Schema], c.[Database], c.[Table_Name], c.[Column_Name] DESC) AS ''RowNumber''
 				  FROM Notillia.Columns c
-				  WHERE c.[Schema] = ''dbo'' AND c.[Database] = ''muziekdatabase'' AND c.Table_Name = ''{{ParameterTag}}''
+				  WHERE c.[Schema] = ''{{SchemaName}}'' AND c.[Database] = ''{{DatabaseName}}'' AND c.Table_Name = ''{{ParameterTag}}''
 			) d ', '', ''
 		);
