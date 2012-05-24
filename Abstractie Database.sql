@@ -97,7 +97,7 @@ FROM sys.tables t
 	INNER JOIN sys.all_columns ac ON t.object_id = ac.object_id and ic.column_id = ac.column_id
 	INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
 WHERE t.name != 'sysdiagrams' and s.name != 'Notillia' and t.type='u'
---ORDER BY i.name, ic.index_column_id ASC
+--ORDER BY Constraint_Name.name, ic.index_column_id ASC
 GO
 
 --FK's
