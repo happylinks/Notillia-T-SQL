@@ -318,12 +318,7 @@ class {{TableName}}Controller extends WebpageController{
 	private function createFKColumnArray( $data, $child ) {
 		$return = array();
 		switch ( $child ) {
-			case ''stuk'':
-				$return[''column_stuknrOrigineel''] = @$data[''stuknrOrigineel''];
-				break;
-			case ''bezettingsregel'':
-				$return[''column_stuknr''] = @$data[''stuknr''];
-				break;
+			{{createFKColumnArrayTables}}
 		}
 		return $return;
 	}
@@ -588,11 +583,6 @@ VALUES (
 							<a name="add" class="btn btn-mini btn-success tip" title="Add"><i class="icon icon-plus icon-white"></i></a>
 							<a name="edit" class="btn btn-mini btn-warning tip" title="Edit"><i class="icon icon-edit icon-white"></i></a>
 							<a name="del"class="btn btn-mini btn-danger tip" title="Delete"><i class="icon icon-trash icon-white"></i></a>
-							&nbsp;&nbsp; 
-							<a name="search" class="btn btn-mini tip" title="Search"><i class="icon icon-search"></i></a>
-							<a name="tableoptions" class="btn btn-mini tip" title="Table Options"><i class="icon icon-filter"></i></a>
-							<a name="generateExcel" class="btn btn-mini tip" title="Generate Excel"><li class="icon icon-file"></li></a>
-							<a name="switchview" class="btn btn-mini tip" title="Switch View"><i class="icon icon-th-list"></i></a>
 						<!--/GENERATE BUTTONS HERE-->
 					</span>
 					<span class="inline-search">
@@ -983,7 +973,28 @@ VALUES (
 		 ORDER BY cc.Index_Column_Id',
 		'',
 		''
+		),
+		(
+		'PHP Controller Layout',
+		'createFKColumnArrayTables',
+		'createFKColumnArrayTables',
+		'{{createFKColumnArrayTables}}',
+		'case {{notillia_1}}:
+			#{{createFKColumnArrayTableReturn={{notillia_1}}}}
+			break;',
+		'SELECT fk.Child_Table, 1, 1, 1, 1, 1
+		 FROM Notillia.ForeignKeys fk
+		 WHERE fk.[Database] = ''{{DatabaseName}}'' AND fk.[Schema] = ''{{SchemaName}}'' AND fk.Master_Table = ''{{TableName}}''',
+		'',
+		''
+		),
+		(
+		'PHP Controller Layout',
+		'createFKColumnArrayTableColumns',
+		'createFKColumnArrayTableColumns',
+		'{{createFKColumnArrayTableReturn}}',
+		'{{notillia_1}}',
+		'',
+		'',
+		''
 		)
-
-
-		
