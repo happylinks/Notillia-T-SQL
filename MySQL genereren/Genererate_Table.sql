@@ -1,8 +1,8 @@
 USE muziekdatabase
-
+go
 EXEC generateMySql
+go
 
-create schema Notillia
 /*==============================================================
 MSSQL database to MYSQL DDL script converter 
 
@@ -16,18 +16,31 @@ Views needs to be generated before executing this script
 /* SP: the starting point for generating the MySql script												*/
 /*==============================================================*/
 
-CREATE PROC generateMySQL
+ALTER PROC generateMySQL
+
+@outputPath VARCHAR(MAX) = 'C:',
+@fileName VARCHAR(MAX) = 'mySql.sql'
 AS BEGIN
+DECLARE @generated VARCHAR(MAX) = '' ;
+DECLARE @outputFolder VARCHAR(128) = 'MySQL';
+
+DECLARE @error BIT = 0 ;
+
+EXEC Notillia.procCreateFolderWithCMD @FolderName = @outputFolder, @Location = @outputPath, @Return = @error OUTPUT
 	
  DECLARE @CreateDatabase NVARCHAR(MAX); SET @CreateDatabase = '';
 SELECT @CreateDatabase += sub.Clause
 FROM (SELECT CASE t.[Schema] WHEN 'dbo' THEN '' ELSE t.[Schema] + '.' END + t.[Database] AS 'Clause' FROM Notillia.Tables t UNION
 SELECT CASE v.[Schema] WHEN 'dbo' THEN '' ELSE v.[Schema] + '.' END + v.[Database] AS 'Clause' FROM Notillia.Views v) sub
 
-PRINT 'CREATE DATABASE `' +  @CreateDatabase + '`; ' + CHAR(10) + 'USE DATABASE `' + @CreateDatabase + '`;' + CHAR(10)
+SET @generated += 'CREATE DATABASE `' +  @CreateDatabase + '`; ' + CHAR(10) + 'USE DATABASE `' + @CreateDatabase + '`;' + CHAR(10)
+SET @generated += Notillia.generateCreateTable();
+SET @generated += Notillia.createMysqlFkFile();
+PRINT @generated
 
-PRINT Notillia.generateCreateTable(); 
-exec notillia.createMySqlFKFile;
+DECLARE @outputFilePath VARCHAR(MAX) = @outputPath + '\' + @outputFolder;
+
+EXECUTE Notillia.procWriteStringToFile @generated, @outputFilePath , @fileName 
    	
  END
 
@@ -117,7 +130,9 @@ DECLARE @output VARCHAR(max);
 
 SET @output =(SELECT '`' + c.Column_Name + '`' + ', '
 FROM Notillia.ConstraintColumns c INNER JOIN Notillia.PrimaryKeys pk ON c.Constraint_Name = pk.Constraint_Name
-WHERE c.Table_Name = @tablename FOR XML PATH(''))
+WHERE c.Table_Name = @tablename
+ORDER BY c.Constraint_Name, index_column_id ASC
+FOR XML PATH(''))
 
 RETURN LEFT(@output,LEN(@output) - 1);
    END
@@ -158,7 +173,9 @@ DECLARE @output VARCHAR(max);
 
 SET @output =(SELECT '`' + c.Column_Name + '`' + ', '
 FROM Notillia.ConstraintColumns c INNER JOIN Notillia.Uniques pk ON c.Constraint_Name = pk.Constraint_Name
-WHERE c.Table_Name = @tablename FOR XML PATH(''))
+WHERE c.Table_Name = @tablename
+ORDER BY c.Constraint_Name, index_column_id ASC
+FOR XML PATH(''))
 
 
 
@@ -279,28 +296,21 @@ GO
 
 /*==============================================================*/
 /* PROC: Notillia.createMysqlFkFile                             */
-/*		Creates a MySQL Foreign key file and writes it to the   */
-/*		C:\ directory				    						*/
+/* Returns alter table statements with foreign keys and cascading */			    						*/
 /*==============================================================*/
 
-CREATE PROCEDURE Notillia.createMysqlFkFile
+CREATE FUNCTION Notillia.createMysqlFkFile()
+RETURNS NVARCHAR(MAX)
 AS
 BEGIN
-	DECLARE @String VARCHAR(MAX); SET @String = '';
+	DECLARE @String NVARCHAR(MAX); SET @String = '';
 	SELECT	@String += 'ALTER TABLE `' + FK.Master_Table + '`' + CHAR(10) + 
 				CHAR(9) + ' ADD CONSTRAINT ' + FK.Constraint_Name + ' FOREING KEY (' + Notillia.fnGetMasterColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ') ' + CHAR(10) + 
 					CHAR(9) + CHAR(9) + 'REFERENCES `' + FK.Child_Table + '` (' + Notillia.fnGetChildColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ')' + CHAR(10) + 
 						CHAR(9) + CHAR(9) + CHAR(9) + ' ON CASCADE ' + FK.Update_Rule + CHAR(10) + 
 						CHAR(9) + CHAR(9) + CHAR(9) + ' ON DELETE	' + FK.Delete_Rule + CHAR(10) + CHAR(10)
 					FROM Notillia.Foreignkeys FK
-	PRINT @String;
-	--EXECUTE Notillia.procWriteStringToFile @String,'C:\','fk.sql'
+	RETURN @String;
 END
 GO
 
-/*
-CREATE TABLE test(
-nummer INT IDENTITY(1, 1) NOT NULL,
-tekstje VARCHAR(100) DEFAULT 'hoi' NULL
-)
-*/
