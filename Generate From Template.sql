@@ -27,6 +27,7 @@ BEGIN
 	BEGIN
 
 		SET @template_output = REPLACE(@template_source, '{{TableName}}', @table_name);
+		SET @template_output = REPLACE(@template_source, '{{DatabaseName}}', @database_name);
 		DECLARE @i INT = 0;
 		WHILE(CHARINDEX('{{', @template_output) <> 0 AND @i < (SELECT COUNT(1) FROM Notillia.Tags))
 		BEGIN

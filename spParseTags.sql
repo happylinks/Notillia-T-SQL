@@ -51,7 +51,7 @@ BEGIN
 				DECLARE @notillia_4 NVARCHAR(max);
 				DECLARE @notillia_5 NVARCHAR(max);
 				DECLARE @notillia_6 NVARCHAR(max);
-				DECLARE @tag_source NVARCHAR(max) = '''+@tag_source+''';
+				DECLARE @tag_source NVARCHAR(max) = '''+REPLACE(@tag_source, '''', '''''')+''';
 				DECLARE notillia_dbresults CURSOR FOR ' + @tag_query + '
 				OPEN notillia_dbresults
 				FETCH NEXT FROM notillia_dbresults INTO @notillia_1,@notillia_2,@notillia_3,@notillia_4,@notillia_5,@notillia_6
@@ -64,7 +64,7 @@ BEGIN
 					SET @tag_temp = REPLACE(@tag_temp,''{{notillia_4}}'',ISNULL(@notillia_4, ''''));
 					SET @tag_temp = REPLACE(@tag_temp,''{{notillia_5}}'',ISNULL(@notillia_5, ''''));
 					SET @tag_temp = REPLACE(@tag_temp,''{{notillia_6}}'',ISNULL(@notillia_6, ''''));
-					SET @tag_result += @tag_temp + CHAR(13);
+					SET @tag_result += @tag_temp;
 					
 					FETCH NEXT FROM notillia_dbresults INTO @notillia_1,@notillia_2,@notillia_3,@notillia_4,@notillia_5,@notillia_6
 				END
@@ -74,6 +74,7 @@ BEGIN
 			SET @ParamDefinition = N'@tag_result nvarchar(max) OUTPUT';
 			EXEC sp_executesql @query, @ParamDefinition, @tag_result = @tag_result OUTPUT
 
+			SET @output_out = REPLACE(@output_out, '{{TableName}}', @table_name);
 			DECLARE @backup_input_out NVARCHAR(max) = @output_out;
 			IF @checkTagValue <> 0
 				BEGIN

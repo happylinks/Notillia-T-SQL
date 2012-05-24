@@ -7,14 +7,14 @@ GO
 *	@Path		The path to save the string on.
 *	@Filename	The file to save the string in.
 */
-CREATE PROCEDURE Notillia.procWriteStringToFile(@String VARCHAR(MAX), @Path VARCHAR(255), @Filename VARCHAR(100)) AS BEGIN
+ALTER PROCEDURE Notillia.procWriteStringToFile(@String NVARCHAR(MAX), @Path NVARCHAR(255), @Filename NVARCHAR(100)) AS BEGIN
 DECLARE  @objFileSystem INT
         ,@objTextStream INT,
          @objErrorObject INT,
-		 @strErrorMessage VARCHAR(1000),
-	     @Command VARCHAR(1000),
+		 @strErrorMessage NVARCHAR(1000),
+	     @Command NVARCHAR(1000),
 	     @hr INT,
-		 @fileAndPath VARCHAR(80);
+		 @fileAndPath NVARCHAR(80);
 
 SET NOCOUNT ON;
 
@@ -37,9 +37,9 @@ IF @HR=0 EXECUTE @hr = sp_OAMethod  @objTextStream, 'Close'
 
 IF @hr<>0 BEGIN
 	DECLARE 
-		@Source VARCHAR(255),
-		@Description VARCHAR(255),
-		@Helpfile VARCHAR(255),
+		@Source NVARCHAR(255),
+		@Description NVARCHAR(255),
+		@Helpfile NVARCHAR(255),
 		@HelpID INT
 	
 	EXECUTE sp_OAGetErrorInfo  @objErrorObject, 
