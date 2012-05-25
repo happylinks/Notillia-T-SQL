@@ -13,7 +13,7 @@ END
 *	Template table with all the templates for the CRUD application
 */
 CREATE TABLE Notillia.Templates(
-	name		varchar(64)		not null,
+	name		varchar(128)		not null,
 	description varchar(120)	not null,
 	source		text			not null,
 	path		varchar(255)	not null,
@@ -27,10 +27,10 @@ GO
 */
 CREATE TABLE Notillia.Tags(
 	id				bigint			not null IDENTITY(1,1),
-	template_name	varchar(64)		not null,
-	name			varchar(64)		not null,
-	description		varchar(120)	not null,
-	tag				varchar(40)		not null,
+	template_name	varchar(128)		not null,
+	name			varchar(128)		not null,
+	description		varchar(128)	not null,
+	tag				varchar(64)		not null,
 	source			text			not null,
 	query			varchar(max)	not null,
 	beforeResult	varchar(max)	null,
@@ -236,23 +236,19 @@ class {{TableName}}Controller extends WebpageController{
 	 * Action is called by Ajax /update. Updates a record with parameters (old(only primary keys), new)
 	 */
 	public function actionUpdate() {
-		if ( isset( $_POST[''old''][''stuknr''] ) &&
-				/* All columns of the table. */
-				isset( $_POST[''new''][''stuknr''] ) && isset( $_POST[''new''][''componistId''] ) && isset( $_POST[''new''][''titel''] ) && isset( $_POST[''new''][''stuknrOrigineel''] ) && isset( $_POST[''new''][''genrenaam''] ) && isset( $_POST[''new''][''niveaucode''] ) && isset( $_POST[''new''][''speelduur''] ) && isset( $_POST[''new''][''jaartal''] ) ) {
+		if ( ( {{createUpdatePkOldClause}} ) && {{createUpdateNewClause}}) {
 			$data_old = $this -> addArrayPrefix( $this -> createPKColumnArray( $_POST[''old''] ), ''old_'' );
 			$data_new = $this -> addArrayPrefix( $this -> createColumnArray( $_POST[''new''] ), ''new_'' );
 			$data = array_merge( $data_old, $data_new );
 
-			$query = "UPDATE `{{TableName}}`
-			SET `stuknr` = :new_column_stuknr,
-			`componistId` = :new_column_componistId,
-			`titel` = :new_column_titel,
-			`stuknrOrigineel` = :new_column_stuknrOrigineel,
-			`genrenaam` = :new_column_genrenaam,
-			`niveaucode` = :new_column_niveaucode,
-			`speelduur` = :new_column_speelduur,
-			`jaartal` = :new_column_jaartal
-			WHERE `stuknr` = :old_column_stuknr";
+		"UPDATE `{{TableName}}` 
+			SET {{createUpdateSetNewClause}}
+			WHERE {{createUpdateSetPKWhereClause}}"
+
+
+			$query = "UPDATE `{{TableName}}` 
+					  SET {{createUpdateSetNewClause}};
+					  WHERE {{createUpdateSetPKWhereClause}}"
 			$statement = $this -> DB -> query( $query, $data );
 			if ( !is_array( $statement ) ) {
 				$this -> giveJSONmessage( true, ''Record is updated.'' );
@@ -1048,4 +1044,75 @@ VALUES (
 		 WHERE NFK.Master_Table = ''{{TableName}}''',
 		'',
 		''
+		),
+		(
+		'PHP Controller Layout',
+		'createUpdatePkOldClause',
+		'createUpdatePkOldClause',
+		'{{createUpdatePkOldClause}}',
+		'isset( $_POST[''old''][''{{notillia_1}}''] ) && ',
+		'SELECT cc.Column_Name, 1, 1, 1, 1, 1 
+		 FROM Notillia.ConstraintColumns cc
+		    INNER JOIN Notillia.PrimaryKeys pk ON cc.[Database] = pk.[Database] AND cc.[Schema] = pk.[Schema] AND cc.Constraint_Name = pk.Constraint_Name
+		 WHERE cc.[Database] = ''{{DatabaseName}}'' AND cc.[Schema] = ''{{SchemaName}}'' AND cc.Table_Name = ''{{TableName}}''
+		 ORDER BY cc.Index_Column_Id',
+		'',
+		'IF LEN(@tag_result) > 0
+			BEGIN
+				SET @tag_result = SUBSTRING(@tag_result, 0, (LEN(@tag_result) -3));
+			END'
+		),
+		(
+		'PHP Controller Layout',
+		'createUpdateNewClause',
+		'createUpdateNewClause',
+		'{{createUpdateNewClause}}',
+		'isset( $_POST[''new''][''{{notillia_1}}''] ) && ',
+		'SELECT c.Column_Name, 1, 1, 1, 1, 1 
+		 FROM Notillia.Columns c
+		 WHERE c.[Database] = ''{{DatabaseName}}'' AND c.[Schema] = ''{{SchemaName}}'' AND c.Table_Name = ''{{TableName}}''
+		 ORDER BY c.Ordinal_Position',
+		'',
+		'IF LEN(@tag_result) > 0
+			BEGIN
+				SET @tag_result = SUBSTRING(@tag_result, 0, (LEN(@tag_result) -3));
+			END'
+		),
+		(
+		'PHP Controller Layout',
+		'createUpdateSetNewClause',
+		'createUpdateSetNewClause',
+		'{{createUpdateSetNewClause}}',
+		'`{{notillia_1}}` = :new_column_'' + ''stuknr, ',
+		'SELECT c.Column_Name, 1, 1, 1, 1, 1 
+		 FROM Notillia.Columns c
+		 WHERE c.[Database] = ''{{DatabaseName}}'' AND c.[Schema] = ''{{SchemaName}}'' AND c.Table_Name = ''{{TableName}}''
+		 ORDER BY c.Ordinal_Position',
+		'',
+		'IF LEN(@tag_result) > 0
+			BEGIN
+				SET @tag_result = SUBSTRING(@tag_result, 0, (LEN(@tag_result) -0));
+			END'
+		),
+		(
+		'PHP Controller Layout',
+		'createUpdateSetPKWhereClause',
+		'createUpdateSetPKWhereClause',
+		'{{createUpdateSetPKWhereClause}}',
+		'`{{notillia_1}}` = :old_column_'' + {{notillia_1}} AND',
+		'SELECT c.Column_Name, 1, 1, 1, 1, 1 
+		 FROM Notillia.Columns c
+		 WHERE c.[Database] = ''{{DatabaseName}}'' AND c.[Schema] = ''{{SchemaName}}'' AND c.Table_Name = ''{{TableName}}''
+		 ORDER BY c.Ordinal_Position',
+		'',
+		'IF LEN(@tag_result) > 0
+			BEGIN
+				SET @tag_result = SUBSTRING(@tag_result, 0, (LEN(@tag_result) -3));
+			END'
 		)
+
+
+
+		$query = "UPDATE `{{TableName}}` 
+			SET {{createUpdateSetNewClause}}
+			WHERE {{createUpdateSetPKWhereClause}}";
