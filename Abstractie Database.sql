@@ -89,7 +89,7 @@ GO
 
 --Constraints Columns
 --PK's EN Unique's
-ALTER VIEW Notillia.ConstraintColumns AS
+CREATE VIEW Notillia.ConstraintColumns AS
 SELECT DB_NAME() AS 'Database', s.name AS 'Schema', t.name AS 'Table_Name', i.name AS 'Constraint_Name', ic.column_id, ac.name AS 'Column_Name', ic.index_column_id AS 'Index_Column_Id'
 FROM sys.tables t
 	INNER JOIN sys.indexes i ON t.object_id = i.object_id
@@ -104,7 +104,8 @@ GO
 CREATE VIEW Notillia.ForeignKeyColumns AS
 SELECT SCHEMA_NAME(fk.schema_id) AS 'Schema', fk.name AS 'Constraint_Name',
 	   OBJECT_NAME(fk.parent_object_id) AS 'Child_Table', COL_NAME(fkc.parent_object_id, fkc.parent_column_id) AS 'Child_Column', 
-	   OBJECT_NAME (fk.referenced_object_id) AS 'Master_Table', COL_NAME(fkc.referenced_object_id, fkc.referenced_column_id) AS 'Master_Column'
+	   OBJECT_NAME (fk.referenced_object_id) AS 'Master_Table', COL_NAME(fkc.referenced_object_id, fkc.referenced_column_id) AS 'Master_Column',
+	   DB_NAME() AS 'Database'
 FROM sys.foreign_keys fk
 	INNER JOIN sys.foreign_key_columns fkc ON fk.object_id = fkc.constraint_object_id
 WHERE SCHEMA_NAME(fk.schema_id) != 'Notillia'

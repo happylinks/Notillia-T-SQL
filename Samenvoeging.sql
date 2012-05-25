@@ -980,7 +980,7 @@ VALUES (
 		'createFKColumnArrayTables',
 		'{{createFKColumnArrayTables}}',
 		'case {{notillia_1}}:
-			#{{createFKColumnArrayTableReturn={{notillia_1}}}}
+			{{createFKColumnArrayTableReturn={{notillia_1}}}}
 			break;',
 		'SELECT fk.Child_Table, 1, 1, 1, 1, 1
 		 FROM Notillia.ForeignKeys fk
@@ -994,7 +994,19 @@ VALUES (
 		'createFKColumnArrayTableColumns',
 		'{{createFKColumnArrayTableReturn}}',
 		'{{notillia_1}}',
-		'',
+		'SELECT CASE c.IS_NULLable 
+			WHEN ''YES'' THEN ''if( isset( $data[''''null_'' + c.Column_Name + ''''''] ) && $data[''''null_'' + c.Column_Name + ''''''] == ''''true'''') {'' + CHAR(10) +
+								''$return[''''column_'' + c.Column_Name + ''''''] = null;'' + CHAR(10) +
+							''} else {'' + CHAR(10) +
+								''$return[''''column_'' + c.Column_Name + ''''''] = @$data['''''' + c.Column_Name + ''''''];'' + CHAR(10) +
+							''}''
+			ELSE ''$return[''''column_'' + c.Column_Name + ''''''] = @$data['''''' + c.Column_Name + ''''''];'' END, 1, 1, 1, 1, 1
+		FROM Notillia.Columns c
+		WHERE c.[Database] = ''{{DatabaseName}}'' AND c.[Schema] = ''dbo'' AND c.Table_Name = ''{{TableName}}'' 
+			  AND EXISTS (SELECT 1 FROM Notillia.ForeignKeyColumns fkc 
+						  WHERE fkc.[Database] = ''{{DatabaseName}}'' AND fkc.[Schema] = ''{{SchemaName}}'' AND 
+								fkc.Master_Table = c.Table_Name AND fkc.Child_Column = c.Column_Name AND
+								fkc.Child_Table = ''{{ParameterTag}}'')',
 		'',
 		''
 		)
