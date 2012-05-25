@@ -71,12 +71,12 @@ DECLARE @template NVARCHAR(max) = '
           </div>
         </div>
 <?php $thispath = WWW_BASE_PATH."{{TableName}}/"; ?>
-<script>var controllername = "Stuk"; var basepath = "<?php echo WWW_BASE_PATH; ?>";</script>
+<script>var controllername = "{{TableName}}"; var basepath = "<?php echo WWW_BASE_PATH; ?>";</script>
 <div class="span9" id="notillia_body">
 	<div class="row-fluid">
 		<div class="tableparent">
 			<!-- MASTER -->
-			<div name="stuk" class="item master grid">
+			<div name="{{TableName}}" class="item master grid">
 				<div class="head">
 					<h2>{{TableName}}</h2>
 					<span class="buttons">
@@ -134,7 +134,7 @@ DECLARE @template NVARCHAR(max) = '
 </div>
 <!-- GENERATE MASTER MODALS HERE FOR "{{TableName}}" -->
 	<!-- GENERATE ADD MODAL HERE -->
-	<div class="modal master fade add" name="stuk">
+	<div class="modal master fade add" name="{{TableName}}">
 		<div class="modal-header">
 			<a class="close" data-dismiss="modal">×</a>
 			<h3>Add {{TableName}}</h3>
@@ -153,7 +153,7 @@ DECLARE @template NVARCHAR(max) = '
 	</div>
 	<!--/GENERATE ADD MODAL HERE -->
 	<!-- GENERATE EDIT MODAL HERE -->
-	<div class="modal master fade edit" name="stuk">
+	<div class="modal master fade edit" name="{{TableName}}">
 		<div class="modal-header">
 			<a class="close" data-dismiss="modal">×</a>
 			<h3>Edit {{TableName}}</h3>
@@ -283,11 +283,6 @@ VALUES (
 							<a name="add" class="btn btn-mini btn-success tip" title="Add"><i class="icon icon-plus icon-white"></i></a>
 							<a name="edit" class="btn btn-mini btn-warning tip" title="Edit"><i class="icon icon-edit icon-white"></i></a>
 							<a name="del"class="btn btn-mini btn-danger tip" title="Delete"><i class="icon icon-trash icon-white"></i></a>
-							&nbsp;&nbsp; 
-							<a name="search" class="btn btn-mini tip" title="Search"><i class="icon icon-search"></i></a>
-							<a name="tableoptions" class="btn btn-mini tip" title="Table Options"><i class="icon icon-filter"></i></a>
-							<a name="generateExcel" class="btn btn-mini tip" title="Generate Excel"><li class="icon icon-file"></li></a>
-							<a name="switchview" class="btn btn-mini tip" title="Switch View"><i class="icon icon-th-list"></i></a>
 						<!--/GENERATE BUTTONS HERE-->
 					</span>
 					<span class="inline-search">

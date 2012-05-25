@@ -1009,4 +1009,43 @@ VALUES (
 								fkc.Child_Table = ''{{ParameterTag}}'')',
 		'',
 		''
+		),
+		(
+		'PHP Controller Layout',
+		'childrenSQLCase',
+		'Create Case statements for every child containing a SQL setup.',
+		'{{childrenSQLCase}}',
+		'case ''{{notillia_1}}'':
+				$query = "SELECT {{childrenAllColumns={{notillia_1}}}}, (
+										SELECT COUNT(*) FROM (
+											SELECT 1
+											FROM `{{notillia_1}}` t3
+											INNER JOIN `{{TableName}}` t4 ON {{childrenForeignKeyRelation={{notillia_1}}}}
+											";
+				if ( isset( $_POST[''where''] ) && is_array( $_POST[''where''] ) ) {
+					$query .= "WHERE {{childrenPKClause={{notillia_1}}}}";
+					$data = $this -> createFKColumnArray( $_POST[''where''], $child );
+				}
+				$query .= "
+						  					GROUP BY {{childrenPKOrder={{notillia_1}}}}
+						  				) AS subQuery
+									) AS ''notillia.totalrecords''
+							FROM `{{notillia_1}}` s
+    						INNER JOIN `{{TableName}}` s2
+    						ON {{childrenForeignKeyRelation={{notillia_1}}}}";
+				if ( isset( $_POST[''where''] ) && is_array( $_POST[''where''] ) ) {
+					$query .= "WHERE {{childrenPKClause={{notillia_1}}}} ";
+					$data = $this -> createFKColumnArray( $_POST[''where''], $child );
+				}
+				$query .= "GROUP BY {{childrenPKOrder={{notillia_1}}}}
+						  	LIMIT :limit
+						  	OFFSET :offset";
+				break;',
+		'SELECT NFK.Child_Table,1,1,1,1,1
+		 FROM Notillia.ForeignKeys NFK
+		 INNER JOIN Notillia.ForeignKeyColumns NFKC
+		 ON NFKC.Constraint_Name = NFK.Constraint_Name
+		 WHERE NFK.Master_Table = ''{{TableName}}''',
+		'',
+		''
 		)
