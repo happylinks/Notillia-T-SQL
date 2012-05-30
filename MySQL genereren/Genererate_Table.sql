@@ -322,7 +322,7 @@ BEGIN
 					CHAR(9) + CHAR(9) + 'REFERENCES `' + FK.Child_Table + '` (' + Notillia.fnGetChildColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ')' + CHAR(10) + 
 					CHAR(9) + CHAR(9) + CHAR(9) + ' ON UPDATE ' + FK.Update_Rule + CHAR(10) + 
 					CHAR(9) + CHAR(9) + CHAR(9) + ' ON DELETE  ' + FK.Delete_Rule + CHAR(10) +
-					'GO' + CHAR(10) + CHAR(10)
+					';' + CHAR(10) + CHAR(10)
 					FROM Notillia.Foreignkeys FK
 	RETURN @String;
 END
