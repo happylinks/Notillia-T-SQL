@@ -1,6 +1,6 @@
 
 DECLARE @driveLetter NVARCHAR(2) = 'C:';
-DECLARE @database_name NVARCHAR(50) = 'kok';
+DECLARE @database_name NVARCHAR(50) = 'muziekdatabase';
 DECLARE @schema_name NVARCHAR(50) = 'dbo';
 DECLARE @template_output NVARCHAR(max);
 DECLARE @table_name NVARCHAR(50);

@@ -127,6 +127,8 @@ class {{TableName}}Controller extends WebpageController{
 		$this -> loadView( ''json'' );
 	}
 
+
+
 	/**
 	 * Function that processes the raw SQL data to a JSON message for the client.
 	 * Also cuts of the total records of the table, and sends it a seperate variable.
@@ -157,6 +159,26 @@ class {{TableName}}Controller extends WebpageController{
 		}
 	}
 
+	public function actionCsv(){
+		$csv = new csvWriter();
+		$result = $this -> DB -> select("SELECT {{AllColumns}} FROM `{{TableName}}` LIMIT :limit OFFSET :offset",array(''limit''=>DefaultLimit,''offset''=>1));
+		$data = array();
+		$headers = array();
+		foreach($result[0] as $key=>$value){
+			$headers[] = $key;
+		}
+		$data[] = $headers;
+		foreach($result as $row){
+			$array = array();
+			foreach($row as $value){
+				$array[] = $value;
+			}
+			$data[] = $array;
+		}
+		$csv->outputCSV($data);
+		$this -> loadView(''csv'');
+	}
+
 	/**
 	 * Action is called by Ajax /insert. Inserts a new record in this table.
 	 */
@@ -169,7 +191,7 @@ class {{TableName}}Controller extends WebpageController{
 			if ( !is_array( $statement ) ) {
 				$this -> giveJSONmessage( true, ''Record is inserted.'' );
 			} else {
-				$this -> giveJSONmessage( false, $statement[2] );
+				$this -> giveJSONmessage( false, @$statement[''message''] );
 			}
 		} else {
 			$this -> giveJSONmessage( false, ''Parameters are incorrect.'' );
@@ -193,7 +215,7 @@ class {{TableName}}Controller extends WebpageController{
 			if ( !is_array( $statement ) ) {
 				$this -> giveJSONmessage( true, ''Record is updated.'' );
 			} else {
-				$this -> giveJSONmessage( false, $statement[2] );
+				$this -> giveJSONmessage( false, @$statement[''message''] );
 			}
 		} else {
 			$this -> giveJSONmessage( false, ''Parameters are incorrect.'' );
@@ -213,7 +235,7 @@ class {{TableName}}Controller extends WebpageController{
 			if ( !is_array( $statement ) ) {
 				$this -> giveJSONmessage( true, ''Record is deleted.'' );
 			} else {
-				$this -> giveJSONmessage( false, $statement[2] );
+				$this -> giveJSONmessage( false, @$statement[''message''] );
 			}
 		} else {
 			$this -> giveJSONmessage( false, ''Parameters are incorrect.'' );
