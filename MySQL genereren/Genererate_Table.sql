@@ -1,8 +1,8 @@
-USE muziekdatabase
+/*USE muziekdatabase --The database to be converted
 go
-EXEC generateMySql
+EXEC generateMySql --Execute AFTER loading the right functions/procs
 go
-
+*/
 /*==============================================================
 MSSQL database to MYSQL DDL script converter 
 
@@ -320,8 +320,9 @@ BEGIN
 	SELECT	@String += 'ALTER TABLE `' + FK.Master_Table + '`' + CHAR(10) + 
 				CHAR(9) + ' ADD CONSTRAINT ' + FK.Constraint_Name + ' FOREIGN KEY (' + Notillia.fnGetMasterColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ') ' + CHAR(10) + 
 					CHAR(9) + CHAR(9) + 'REFERENCES `' + FK.Child_Table + '` (' + Notillia.fnGetChildColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ')' + CHAR(10) + 
-						CHAR(9) + CHAR(9) + CHAR(9) + ' ON CASCADE ' + FK.Update_Rule + CHAR(10) + 
-						CHAR(9) + CHAR(9) + CHAR(9) + ' ON DELETE	' + FK.Delete_Rule + CHAR(10) + CHAR(10)
+					CHAR(9) + CHAR(9) + CHAR(9) + ' ON UPDATE ' + FK.Update_Rule + CHAR(10) + 
+					CHAR(9) + CHAR(9) + CHAR(9) + ' ON DELETE  ' + FK.Delete_Rule + CHAR(10) +
+					'GO' + CHAR(10) + CHAR(10)
 					FROM Notillia.Foreignkeys FK
 	RETURN @String;
 END
