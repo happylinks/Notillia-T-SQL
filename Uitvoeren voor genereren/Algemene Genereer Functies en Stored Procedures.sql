@@ -14,8 +14,6 @@ GO
 CREATE TYPE Email FROM VARCHAR(128) NOT NULL;
 GO
 
-
-
 --Table(s) && View(s):
 CREATE VIEW Notillia.Tables AS 
 SELECT t.TABLE_CATALOG AS 'Database', t.TABLE_SCHEMA AS 'Schema', t.TABLE_NAME AS 'Table_Name'
@@ -96,6 +94,24 @@ FROM sys.foreign_keys fk
 WHERE SCHEMA_NAME(fk.schema_id) != 'Notillia'
 GO
 
+--CMD_SHELL
+CREATE PROCEDURE Notillia.procEnableXP_CMDShell AS BEGIN
+	EXECUTE sp_configure 'show advanced options', 1;
+	RECONFIGURE;
+	
+	EXECUTE sp_configure 'xp_cmdshell', 1;
+	RECONFIGURE;
+END
+GO
+
+CREATE PROCEDURE Notillia.procDisableXP_CMDShell AS BEGIN
+	EXECUTE sp_configure 'xp_cmdshell', 0;
+	RECONFIGURE;
+	
+	EXECUTE sp_configure 'show advanced options', 0;
+	RECONFIGURE
+END
+GO
 
 /**
 *	The procedure procExecuteCMDShell executes an cmd commmando. 
@@ -228,25 +244,6 @@ CREATE PROCEDURE Notillia.procDisableOLEAutomationProcedures AS BEGIN
 	
 	EXECUTE master.dbo.sp_configure 'show advanced options', 0;
 	RECONFIGURE;
-END
-GO
-
---CMD_SHELL
-CREATE PROCEDURE Notillia.procEnableXP_CMDShell AS BEGIN
-	EXECUTE sp_configure 'show advanced options', 1;
-	RECONFIGURE;
-	
-	EXECUTE sp_configure 'xp_cmdshell', 1;
-	RECONFIGURE;
-END
-GO
-
-CREATE PROCEDURE Notillia.procDisableXP_CMDShell AS BEGIN
-	EXECUTE sp_configure 'xp_cmdshell', 0;
-	RECONFIGURE;
-	
-	EXECUTE sp_configure 'show advanced options', 0;
-	RECONFIGURE
 END
 GO
 

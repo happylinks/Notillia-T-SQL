@@ -328,6 +328,3 @@ BEGIN
 	RETURN @String;
 END
 GO
-
-
-EXEC generateMySql
