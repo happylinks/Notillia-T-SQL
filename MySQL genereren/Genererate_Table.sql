@@ -1,6 +1,6 @@
 /*USE muziekdatabase --The database to be converted
 go
-EXEC generateMySql --Execute AFTER loading the right functions/procs
+EXEC Notillia.generateMySql --Execute AFTER loading the right functions/procs
 go
 */
 /*==============================================================
@@ -16,12 +16,12 @@ Views needs to be generated before executing this script
 /* SP: the starting point for generating the MySql script												*/
 /*==============================================================*/
 
-CREATE PROC generateMySQL
+ALTER PROC Notillia.generateMySQL
 
 @outputPath VARCHAR(MAX) = 'C:',
 @fileName VARCHAR(MAX) = 'mySql.sql'
 AS BEGIN
-DECLARE @generated VARCHAR(MAX) = '' ;
+DECLARE @generated VARCHAR(MAX) = '' + CHAR(10) ;
 DECLARE @outputFolder VARCHAR(128) = 'MySQL';
 
 DECLARE @error BIT = 0 ;
@@ -33,8 +33,25 @@ SELECT @CreateDatabase += sub.Clause
 FROM (SELECT CASE t.[Schema] WHEN 'dbo' THEN '' ELSE t.[Schema] + '.' END + t.[Database] AS 'Clause' FROM Notillia.Tables t UNION
 SELECT CASE v.[Schema] WHEN 'dbo' THEN '' ELSE v.[Schema] + '.' END + v.[Database] AS 'Clause' FROM Notillia.Views v) sub
 
-SET @generated += 'CREATE DATABASE `' +  @CreateDatabase + '`; ' + CHAR(10) + 'USE `' + @CreateDatabase + '`;' + CHAR(10)
+SET @generated += '/*===============================================================*/' + CHAR(10) +
+				  '/*CREATE DATABASE                                                */' + CHAR(10) +
+				  '/*                                       						*/' + CHAR(10) +
+				  '/*===============================================================*/' + CHAR(10) + CHAR(10)
+SET @generated += 'CREATE DATABASE `' +  @CreateDatabase + '`; ' + CHAR(10)+ CHAR(10) + 'USE `' + @CreateDatabase + '`;' + CHAR(10)+ CHAR(10)
+SET @generated += '/*===============================================================*/' + CHAR(10) +
+				  '/* CREATE TABLES                                                 */' + CHAR(10) +
+				  '/*																*/' + CHAR(10) +
+				  '/*===============================================================*/' + CHAR(10) + CHAR(10)
 SET @generated += Notillia.generateCreateTable();
+SET @generated += '/*===============================================================*/' + CHAR(10) +
+				  '/* CREATE INDEXES                                                */' + CHAR(10) +
+				  '/*																*/' + CHAR(10) +
+				  '/*===============================================================*/' + CHAR(10) + CHAR(10)
+SET @generated += Notillia.createMysqlIndex();
+SET @generated += '/*===============================================================*/' + CHAR(10) +
+				  '/* CREATE FOREIGN KEYS                                           */' + CHAR(10) +
+				  '/*																*/' + CHAR(10) +
+				  '/*===============================================================*/' + CHAR(10) + CHAR(10)
 SET @generated += Notillia.createMysqlFkFile();
 PRINT @generated
 
@@ -307,10 +324,10 @@ CREATE FUNCTION Notillia.fnGetChildColumnsForForeignKey (@Schema VARCHAR(MAX), @
 END
 GO
 
-/*==============================================================*/
-/* PROC: Notillia.createMysqlFkFile                             */
+/*================================================================*/
+/* UDF : Notillia.createMysqlFkFile                               */
 /* Returns alter table statements with foreign keys and cascading */
-/*==============================================================*/
+/*================================================================*/
 
 
 CREATE FUNCTION Notillia.createMysqlFkFile()
@@ -328,3 +345,31 @@ BEGIN
 	RETURN @String;
 END
 GO
+
+/*===============================================================*/
+/* UDF : Notillia.createMysqlIndex								 */
+/* Returns indexes for foreign key colums						 */
+/*===============================================================*/
+
+
+CREATE FUNCTION Notillia.createMysqlIndex()
+RETURNS NVARCHAR(MAX)
+BEGIN
+
+DECLARE @index VARCHAR(2000)
+SET @index = ''
+
+SELECT @index += 'CREATE INDEX FK_' + sub.[table] + '_' + sub.[column] + CHAR(10)+
+					CHAR(9) + 'ON ' + sub.[table] + ' (' + sub.[column] + ');' + CHAR(10) + CHAR(10)
+	FROM (	SELECT Master_Table AS 'table',Master_Column AS 'column' FROM Notillia.ForeignKeyColumns
+				GROUP BY Master_Table,Master_Column
+				UNION
+			SELECT Child_Table AS 'table',Child_Column AS 'column' FROM Notillia.ForeignKeyColumns
+				GROUP BY Child_Table,Child_Column ) sub
+	WHERE EXISTS(	SELECT ncc.Table_Name, ncc.Column_Name FROM Notillia.ConstraintColumns ncc
+						INNER JOIN Notillia.PrimaryKeys npk
+							ON ncc.Constraint_Name = npk.Constraint_Name
+						WHERE ncc.Column_Name = sub.[column] AND ncc.Table_Name = sub.[table])
+	RETURN @index;
+END
+

@@ -1,4 +1,4 @@
-CREATE PROCEDURE Notillia.createIndexFk
+CREATE FUNCTION Notillia.createIndexFk
 AS
 BEGIN
 
@@ -20,4 +20,3 @@ SELECT @index += 'CREATE INDEX FK_' + sub.[table] + '_' + sub.[column] + CHAR(10
 PRINT(@index)
 END
 
-EXECUTE Notillia.createIndexFk
