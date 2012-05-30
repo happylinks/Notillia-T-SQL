@@ -1,8 +1,3 @@
--- Selecteer hier je database!
-USE [muziekdatabase];
-GO
-
-
 CREATE SCHEMA Notillia; 
 GO
 
@@ -173,6 +168,7 @@ CREATE PROCEDURE Notillia.procReadFileWithCMD(@Location VARCHAR(255), @FileName 
 	
 	RETURN @Return;
 END
+GO
 
 /**
 *	The function Escape Strign escapes Characters.
@@ -308,6 +304,8 @@ EXECUTE sp_OADestroy @objTextStream
 EXECUTE Notillia.procDisableOLEAutomationProcedures;
 END
 
+GO
+
 
 CREATE PROCEDURE Notillia.parseTag @output_in NVARCHAR(max), @template_name NVARCHAR(25), @database_name NVARCHAR(50), @schema_name NVARCHAR(50), @table_name NVARCHAR(50), @count INT, @output_out NVARCHAR(max) OUTPUT, @count_check INT OUTPUT
 AS
@@ -320,7 +318,7 @@ BEGIN
 		DECLARE @tag_afterResult NVARCHAR(max);
 		SET @output_out = @output_in;
 		DECLARE ReplaceValue_tags CURSOR FOR 
-			SELECT name, tag, source, query, beforeResult, afterResult FROM ReplaceValue.Tags WHERE template_name = @template_name ORDER BY id ASC
+			SELECT name, tag, source, query, beforeResult, afterResult FROM Notillia.Tags WHERE template_name = @template_name ORDER BY id ASC
 		OPEN ReplaceValue_tags
 		FETCH NEXT FROM ReplaceValue_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query,@tag_beforeResult,@tag_afterResult
 		WHILE @@FETCH_STATUS = 0
