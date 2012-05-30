@@ -164,7 +164,7 @@ class {{TableName}}Controller extends WebpageController{
 		if ( {{CheckPostAllColumns}} ) {
 			$data = $this -> createColumnArray( $_POST );
 			$query = "INSERT INTO `{{TableName}}` ({{AllColumns}}) VALUES
-			(:column_stuknr, :column_componistId, :column_titel, :column_stuknrOrigineel, :column_genrenaam, :column_niveaucode, :column_speelduur, :column_jaartal)";
+			({{AllColumns}})";
 			$statement = $this -> DB -> query( $query, $data );
 			if ( !is_array( $statement ) ) {
 				$this -> giveJSONmessage( true, ''Record is inserted.'' );
@@ -447,7 +447,7 @@ VALUES (
 		'TableHeader',
 		'Give all columns including datatypes in an table header format.',
 		'{{TableHeader}}',
-		'<th contraint="{{notillia_3}}" name="{{notillia_1}}"><span class="tiptop" title="{{notillia_2}}">{{notillia_1}}</span></th>',
+		'<th contraint="{{ReplaceValue_3}}" name="{{ReplaceValue_1}}"><span class="tiptop" title="{{ReplaceValue_2}}">{{ReplaceValue_1}}</span></th>',
 		'SELECT c.Column_Name, c.Data_Type,
 		(SELECT ''pk'' FROM Notillia.ConstraintColumns cc
 		INNER JOIN Notillia.PrimaryKeys pk
@@ -462,7 +462,7 @@ VALUES (
 		'DetailColumns',
 		'Detail view voor alle kolommen.',
 		'{{DetailColumns}}',
-		'{{notillia_1}}',
+		'{{ReplaceValue_1}}',
 		'SELECT CASE d.RowNumber % 2 
 			WHEN 1 THEN ''<tr><th><span class="tiptop" title="'' + d.Data_Type + ''">'' + d.Column_Name + ''</span></th><td name="'' + d.Column_Name + ''"></td>''
 			WHEN 0 THEN ''<th><span class="tiptop" title="'' + d.Data_Type + ''">'' + d.Column_Name + ''</span></th><td name="'' + d.Column_Name + ''"></td></tr>'' ELSE ''ERROR'' END
@@ -477,7 +477,7 @@ VALUES (
 		'ChildrenTabs',
 		'Create tabs for each child.',
 		'{{ChildrenTabs}}',
-		'<li name="{{notillia_1}}"><a href="#">{{notillia_1}}</a></li>',
+		'<li name="{{ReplaceValue_1}}"><a href="#">{{ReplaceValue_1}}</a></li>',
 		'SELECT fc.Child_Table,1,1,1,1,1 
 		 FROM Notillia.ForeignKeyColumns fc 
 		 WHERE fc.[Schema] = ''{{SchemaName}}'' AND fc.[Database] = ''{{DatabaseName}}'' AND fc.[Master_Table] = ''{{TableName}}''', '', ''
@@ -487,7 +487,7 @@ VALUES (
 		'ControlGroups',
 		'Create control groups (Forms) for each column.',
 		'{{ControlGroups}}',
-		'{{notillia_1}}',
+		'{{ReplaceValue_1}}',
 		'SELECT 
 		''<div class="control-group">
 		<label for="'' + c.Column_Name + ''" class="control-label"><span class="tipleft" title="'' + c.Data_Type + ''">'' + c.Column_Name + ''</span></label>
@@ -508,9 +508,9 @@ VALUES (
 		'Create an GRID and detail view for each Child.',
 		'{{children}}',
 		'<!-- CHILD -->
-			<div name="{{notillia_1}}" class="item child grid">
+			<div name="{{ReplaceValue_1}}" class="item child grid">
 				<div class="head">
-					<h2>{{notillia_1}}</h2><h6>{{ChildForeignKey={{notillia_1}}}}</h6>
+					<h2>{{ReplaceValue_1}}</h2><h6>{{ChildForeignKey={{ReplaceValue_1}}}}</h6>
 					<span class="buttons">
 						<!-- GENERATE BUTTONS HERE-->
 							<a name="save" class="btn btn-mini btn-success tip" title="Save"><i class="icon icon-ok icon-white"></i></a>
@@ -549,7 +549,7 @@ VALUES (
 						<table class="table table-striped table-bordered grid child" name="grid" data:page="1" data:maxpage="1">
 							<thead>
 								<tr>
-									{{ChildTableHeader={{notillia_1}}}}
+									{{ChildTableHeader={{ReplaceValue_1}}}}
 								</tr>
 							</thead>
 							<tbody>
@@ -559,7 +559,7 @@ VALUES (
 						</table>
 						<table class="table detail child" name="detail">
 							<tbody>
-									{{DetailColumns={{notillia_1}}}}
+									{{DetailColumns={{ReplaceValue_1}}}}
 							</tbody>
 						</table>
 						<div class="pagination" style="text-align:right;">
@@ -587,8 +587,8 @@ VALUES (
 		'ChildForeignKey',
 		'Create an simple list of foreign keys that tells how the child is connected to the master.',
 		'{{ChildForeignKey}}',
-		'{{notillia_1}}, ',
-		'SELECT fkc.Master_Column,1,1,1,1,1 
+		'{{ReplaceValue_1}}, ',
+		'SELECT fkc.Child_Column,1,1,1,1,1 
 		 FROM Notillia.ForeignKeyColumns fkc
 		 WHERE fkc.[Schema] = ''{{SchemaName}}'' AND fkc.[Database] = ''{{DatabaseName}}'' AND fkc.[Child_Table] = ''{{ParameterTag}}'' AND fkc.[Master_Table] = ''{{TableName}}''', 
 		'', 
@@ -602,7 +602,7 @@ VALUES (
 		'ChildTableHeader',
 		'Give all columns including datatypes in an table header format of a child.',
 		'{{ChildTableHeader}}',
-		'<th contraint="{{notillia_3}}" name="{{notillia_1}}"><span class="tiptop" title="{{notillia_2}}">{{notillia_1}}</span></th>',
+		'<th contraint="{{ReplaceValue_3}}" name="{{ReplaceValue_1}}"><span class="tiptop" title="{{ReplaceValue_2}}">{{ReplaceValue_1}}</span></th>',
 		'SELECT c.Column_Name, c.Data_Type,
 		(SELECT ''pk'' FROM Notillia.ConstraintColumns cc
 		INNER JOIN Notillia.PrimaryKeys pk
@@ -617,7 +617,7 @@ VALUES (
 		'ChildDetailColumns',
 		'Detail view for all columns child.',
 		'{{ChildDetailColumns}}',
-		'{{notillia_1}}',
+		'{{ReplaceValue_1}}',
 		'SELECT CASE d.RowNumber % 2 
 			WHEN 1 THEN ''<tr><th><span class="tiptop" title="'' + d.Data_Type + ''">'' + d.Column_Name + ''</span></th><td name="'' + d.Column_Name + ''"></td>''
 			WHEN 0 THEN ''<th><span class="tiptop" title="'' + d.Data_Type + ''">'' + d.Column_Name + ''</span></th><td name="'' + d.Column_Name + ''"></td></tr>'' ELSE ''ERROR'' END
@@ -632,18 +632,18 @@ VALUES (
 		'ChildModals',
 		'Create Create/Update/Delte modals for every Child.',
 		'{{ChildModals}}',
-		'<!-- GENERATE MODALS HERE FOR "{{notillia_1}}" -->
+		'<!-- GENERATE MODALS HERE FOR "{{ReplaceValue_1}}" -->
 		<!-- GENERATE ADD MODAL HERE -->
-		<div class="modal child fade add" name="{{notillia_1}}">
+		<div class="modal child fade add" name="{{ReplaceValue_1}}">
 			<div class="modal-header">
 				<a class="close" data-dismiss="modal">x</a>
-				<h3>Add {{notillia_1}}</h3>
+				<h3>Add {{ReplaceValue_1}}</h3>
 			</div>
 			<div class="modal-body">
 				<form id="add-form" class="form-horizontal">
 					<div class="forminputs" style="margin:0 auto;width:70%;">
 						<!-- GENERATE CONTROLGROUPS HERE -->
-						{{ChildControlGroup={{notillia_1}}}}
+						{{ChildControlGroup={{ReplaceValue_1}}}}
 						<!--/GENERATE CONTROLGROUPS HERE -->
 					</div>
 				</form>
@@ -655,16 +655,16 @@ VALUES (
 		</div>
 		<!--/GENERATE ADD MODAL HERE -->
 		<!-- GENERATE EDIT MODAL HERE -->
-		<div class="modal child fade edit" name="{{notillia_1}}">
+		<div class="modal child fade edit" name="{{ReplaceValue_1}}">
 			<div class="modal-header">
 				<a class="close" data-dismiss="modal">x</a>
-				<h3>Edit {{notillia_1}}</h3>
+				<h3>Edit {{ReplaceValue_1}}</h3>
 			</div>
 			<div class="modal-body">
 				<form id="edit-form" class="form-horizontal">
 					<div class="forminputs" style="margin:0 auto;width:70%;">
 						<!-- GENERATE CONTROLGROUPS HERE -->
-						{{ChildControlGroup={{notillia_1}}}}
+						{{ChildControlGroup={{ReplaceValue_1}}}}
 						<!--/GENERATE CONTROLGROUPS HERE -->
 					</div>
 				</form>
@@ -676,10 +676,10 @@ VALUES (
 		</div>
 		<!--/GENERATE EDIT MODAL HERE -->
 		<!-- GENERATE DELETE MODAL HERE -->
-		<div class="modal child fade del" name="{{notillia_1}}">
+		<div class="modal child fade del" name="{{ReplaceValue_1}}">
 			<div class="modal-header">
 				<a class="close" data-dismiss="modal">x</a>
-				<h3>Delete {{notillia_1}}</h3>
+				<h3>Delete {{ReplaceValue_1}}</h3>
 			</div>
 			<div class="modal-body">
 				Are you sure you want to delete these row(s)?
@@ -690,7 +690,7 @@ VALUES (
 			</div>
 		</div>
 		<!--/GENERATE DELETE MODAL HERE -->
-	<!--/GENERATE MODALS HERE FOR "{{notillia_1}}"-->',
+	<!--/GENERATE MODALS HERE FOR "{{ReplaceValue_1}}"-->',
 	'SELECT NFK.Child_Table,1,1,1,1,1
 		 FROM Notillia.ForeignKeys NFK
 		 INNER JOIN Notillia.ForeignKeyColumns NFKC
@@ -702,7 +702,7 @@ VALUES (
 		'ChildControlGroup',
 		'Create control groups (Forms) for each column for each child.',
 		'{{ChildControlGroup}}',
-		'{{notillia_1}}',
+		'{{ReplaceValue_1}}',
 		'SELECT 
 		''<div class="control-group" style="'' + ISNULL((SELECT ''display:none;'' FROM Notillia.ForeignKeys NFK
 		 INNER JOIN Notillia.ForeignKeyColumns NFKC ON NFKC.Constraint_Name = NFK.Constraint_Name WHERE NFKC.Child_Column = c.Column_Name AND NFKC.Child_Table = ''{{ParameterTag}}'' AND NFKC.Master_Table = ''{{TableName}}''), '''') + ''">
@@ -723,7 +723,7 @@ VALUES (
 		'Menu',
 		'Create an menu with all the tables.',
 		'{{Menu}}',
-		'<li><a href="<?php echo WWW_BASE_PATH ?>{{notillia_1}}/">{{notillia_1}}</a></li>',
+		'<li><a href="<?php echo WWW_BASE_PATH ?>{{ReplaceValue_1}}/">{{ReplaceValue_1}}</a></li>',
 		'SELECT t.Table_Name, 1, 1, 1, 1, 1
 		FROM Notillia.Tables t
 		WHERE t.Table_Name IN (SELECT TOP 5 fk.Master_Table FROM Notillia.ForeignKeys fk GROUP BY fk.Master_Table ORDER BY COUNT(fk.Master_Table) DESC, fk.Master_Table ASC)
@@ -738,7 +738,7 @@ VALUES (
 		'AllColumns',
 		'All columns for a table',
 		'{{AllColumns}}',
-		'`{{notillia_1}}`, ',
+		'`{{ReplaceValue_1}}`, ',
 		'SELECT c.Column_Name, 1, 1, 1, 1, 1
 		 FROM Notillia.Columns c
 		 WHERE c.[Schema] = ''{{SchemaName}}'' AND c.[Database] = ''{{DatabaseName}}'' AND c.Table_Name = ''{{TableName}}''',
@@ -753,7 +753,7 @@ VALUES (
 		'All Pk Columns',
 		'All pk columns for a table',
 		'{{AllPkColumns}}',
-		'`{{notillia_1}}`, ',
+		'`{{ReplaceValue_1}}`, ',
 		'SELECT cc.Column_Name, 1, 1, 1, 1, 1
 		 FROM Notillia.ConstraintColumns cc
 			LEFT JOIN Notillia.PrimaryKeys pk ON cc.[Schema] = pk.[Schema] AND cc.[Database] = pk.[Database] AND cc.Table_Name = pk.Table_Name AND cc.Constraint_Name = pk.Constraint_Name
@@ -769,7 +769,7 @@ VALUES (
 		'All Pk columns smaller',
 		'All pk columns smaller',
 		'{{PKSmallerClause}}',
-		'{{notillia_1}}',
+		'{{ReplaceValue_1}}',
 		'SELECT ''`'' + cc.Column_Name + ''` <= :column_'' + cc.Column_Name + '' AND '', 1, 1, 1, 1, 1
 		 FROM Notillia.ConstraintColumns cc
 			LEFT JOIN Notillia.PrimaryKeys pk ON cc.[Schema] = pk.[Schema] AND cc.[Database] = pk.[Database] AND cc.Table_Name = pk.Table_Name AND cc.Constraint_Name = pk.Constraint_Name
@@ -786,7 +786,7 @@ VALUES (
 		'All Pk columns bigger',
 		'All pk columns bigger',
 		'{{PKBiggerClause}}',
-		'{{notillia_1}}',
+		'{{ReplaceValue_1}}',
 		'SELECT ''`'' + cc.Column_Name + ''` >= :column_'' + cc.Column_Name + '' AND '', 1, 1, 1, 1, 1
 		 FROM Notillia.ConstraintColumns cc
 			LEFT JOIN Notillia.PrimaryKeys pk ON cc.[Schema] = pk.[Schema] AND cc.[Database] = pk.[Database] AND cc.Table_Name = pk.Table_Name AND cc.Constraint_Name = pk.Constraint_Name
@@ -803,7 +803,7 @@ VALUES (
 		'All Pk columns equal',
 		'All pk columns equal',
 		'{{PKEqualClause}}',
-		'{{notillia_1}}',
+		'{{ReplaceValue_1}}',
 		'SELECT ''`'' + cc.Column_Name + ''` = :column_'' + cc.Column_Name + '' AND '', 1, 1, 1, 1, 1
 		 FROM Notillia.ConstraintColumns cc
 			LEFT JOIN Notillia.PrimaryKeys pk ON cc.[Schema] = pk.[Schema] AND cc.[Database] = pk.[Database] AND cc.Table_Name = pk.Table_Name AND cc.Constraint_Name = pk.Constraint_Name
@@ -820,7 +820,7 @@ VALUES (
 		'All columns POST check',
 		'All columns POST check',
 		'{{CheckPostAllColumns}}',
-		'{{notillia_1}}',
+		'{{ReplaceValue_1}}',
 		'SELECT ''isset( $_POST['''''' + c.Column_Name + '''''']) && '', 1, 1, 1, 1, 1
 		 FROM Notillia.Columns c
 		 WHERE c.[Schema] = ''{{SchemaName}}'' AND c.[Database] = ''{{DatabaseName}}'' AND c.Table_Name = ''{{TableName}}''',
@@ -835,7 +835,7 @@ VALUES (
 		'AllColumsWithColumn_Prefix',
 		'AllColumsWithColumn_Prefix',
 		'{{AllColumnsWIthColumn_Prefix}}',
-		'{{notillia_1}}',
+		'{{ReplaceValue_1}}',
 		'SELECT '':column_'' + c.Column_Name + '', '', 1, 1, 1, 1, 1
 	     FROM Notillia.Columns c
 		 WHERE c.[Schema] = ''{{SchemaName}}'' AND c.[Database] = ''{{DatabaseName}}'' AND c.Table_Name = ''{{TableName}}''',
@@ -850,7 +850,7 @@ VALUES (
 		'All PK columns POST check',
 		'All PK columns POST check',
 		'{{CheckPostAllPKColumns}}',
-		'{{notillia_1}}',
+		'{{ReplaceValue_1}}',
 		'SELECT ''isset( $_POST['''''' + cc.Column_Name + ''''''] ) && '', 1, 1, 1, 1, 1 
 		 FROM Notillia.ConstraintColumns cc
 			INNER JOIN Notillia.PrimaryKeys pk ON cc.[Schema] = pk.[Schema] AND cc.[Schema] = pk.[Schema] AND cc.[Table_Name] = pk.[Table_Name] AND cc.Constraint_Name = pk.Constraint_Name
@@ -867,7 +867,7 @@ VALUES (
 		'AllPKColumsWithColumn_Prefix',
 		'AllPKColumsWithColumn_Prefix',
 		'{{AllPKColumnsWIthColumn_Prefix}}',
-		'`{{notillia_1}}` = :column_{{notillia_1}} AND ',
+		'`{{ReplaceValue_1}}` = :column_{{ReplaceValue_1}} AND ',
 		'SELECT cc.Column_Name, 1, 1, 1, 1, 1
 	     FROM Notillia.ConstraintColumns cc
 			INNER JOIN Notillia.PrimaryKeys pk ON cc.[Schema] = pk.[Schema] AND cc.[Schema] = pk.[Schema] AND cc.[Table_Name] = pk.[Table_Name] AND cc.Constraint_Name = pk.Constraint_Name
@@ -884,7 +884,7 @@ VALUES (
 		'createColumnArray',
 		'createColumnArray',
 		'{{createColumnArray}}',
-		'{{notillia_1}}',
+		'{{ReplaceValue_1}}',
 		'SELECT CASE c.IS_NULLable
 			WHEN ''YES'' THEN ''if( isset( $data[''''null_'' + c.Column_Name + ''''''] ) && $data[''''null_'' + c.Column_Name + ''''''] == ''''true'''') {'' + CHAR(10) +
 								''$return[''''column_'' + c.Column_Name + ''''''] = null;'' + CHAR(10) +
@@ -903,7 +903,7 @@ VALUES (
 		'createPKColumnArray',
 		'createPKColumnArray',
 		'{{createPKColumnArray}}',
-		'$return[''column_{{notillia_1}}''] = @$data[''{{notillia_1}}''];',
+		'$return[''column_{{ReplaceValue_1}}''] = @$data[''{{ReplaceValue_1}}''];',
 		'SELECT cc.Column_Name, 1, 1, 1, 1, 1
 		 FROM Notillia.ConstraintColumns cc
 			INNER JOIN Notillia.PrimaryKeys pk ON cc.[Database] = pk.[Database] AND cc.[Schema] = pk.[Schema] AND cc.Table_Name = pk.Table_Name AND cc.Constraint_Name = pk.Constraint_Name
@@ -917,8 +917,8 @@ VALUES (
 		'createFKColumnArrayTables',
 		'createFKColumnArrayTables',
 		'{{createFKColumnArrayTables}}',
-		'case ''{{notillia_1}}'':
-			{{createFKColumnArrayTableReturn={{notillia_1}}}}
+		'case ''{{ReplaceValue_1}}'':
+			{{createFKColumnArrayTableReturn={{ReplaceValue_1}}}}
 			break;',
 		'SELECT fk.Child_Table, 1, 1, 1, 1, 1
 		 FROM Notillia.ForeignKeys fk
@@ -931,7 +931,7 @@ VALUES (
 		'createFKColumnArrayTableColumns',
 		'createFKColumnArrayTableColumns',
 		'{{createFKColumnArrayTableReturn}}',
-		'{{notillia_1}}',
+		'{{ReplaceValue_1}}',
 		'SELECT CASE c.IS_NULLable 
 			WHEN ''YES'' THEN ''if( isset( $data[''''null_'' + c.Column_Name + ''''''] ) && $data[''''null_'' + c.Column_Name + ''''''] == ''''true'''') {'' + CHAR(10) +
 								''$return[''''column_'' + c.Column_Name + ''''''] = null;'' + CHAR(10) +
@@ -943,7 +943,7 @@ VALUES (
 		WHERE c.[Database] = ''{{DatabaseName}}'' AND c.[Schema] = ''dbo'' AND c.Table_Name = ''{{TableName}}'' 
 			  AND EXISTS (SELECT 1 FROM Notillia.ForeignKeyColumns fkc 
 						  WHERE fkc.[Database] = ''{{DatabaseName}}'' AND fkc.[Schema] = ''{{SchemaName}}'' AND 
-								fkc.Master_Table = c.Table_Name AND fkc.Master_Column = c.Column_Name AND
+								fkc.Master_Table = c.Table_Name AND fkc.Child_Column = c.Column_Name AND
 								fkc.Child_Table = ''{{ParameterTag}}'')',
 		'',
 		''
@@ -953,7 +953,7 @@ VALUES (
 		'createUpdatePkOldClause',
 		'createUpdatePkOldClause',
 		'{{createUpdatePkOldClause}}',
-		'isset( $_POST[''old''][''{{notillia_1}}''] ) && ',
+		'isset( $_POST[''old''][''{{ReplaceValue_1}}''] ) && ',
 		'SELECT cc.Column_Name, 1, 1, 1, 1, 1 
 		 FROM Notillia.ConstraintColumns cc
 		    INNER JOIN Notillia.PrimaryKeys pk ON cc.[Database] = pk.[Database] AND cc.[Schema] = pk.[Schema] AND cc.Constraint_Name = pk.Constraint_Name
@@ -970,7 +970,7 @@ VALUES (
 		'createUpdateNewClause',
 		'createUpdateNewClause',
 		'{{createUpdateNewClause}}',
-		'isset( $_POST[''new''][''{{notillia_1}}''] ) && ',
+		'isset( $_POST[''new''][''{{ReplaceValue_1}}''] ) && ',
 		'SELECT c.Column_Name, 1, 1, 1, 1, 1 
 		 FROM Notillia.Columns c
 		 WHERE c.[Database] = ''{{DatabaseName}}'' AND c.[Schema] = ''{{SchemaName}}'' AND c.Table_Name = ''{{TableName}}''
@@ -986,7 +986,7 @@ VALUES (
 		'createUpdateSetNewClause',
 		'createUpdateSetNewClause',
 		'{{createUpdateSetNewClause}}',
-		'`{{notillia_1}}` = :new_column_{{notillia_1}}, ',
+		'`{{ReplaceValue_1}}` = :new_column_{{ReplaceValue_1}}, ',
 		'SELECT c.Column_Name, 1, 1, 1, 1, 1 
 		 FROM Notillia.Columns c
 		 WHERE c.[Database] = ''{{DatabaseName}}'' AND c.[Schema] = ''{{SchemaName}}'' AND c.Table_Name = ''{{TableName}}''
@@ -1002,7 +1002,7 @@ VALUES (
 		'createUpdateSetPKWhereClause',
 		'createUpdateSetPKWhereClause',
 		'{{createUpdateSetPKWhereClause}}',
-		'`{{notillia_1}}` = :old_column_{{notillia_1}} AND ',
+		'`{{ReplaceValue_1}}` = :old_column_{{ReplaceValue_1}} AND ',
 		'SELECT cc.Column_Name, 1, 1, 1, 1, 1
 		FROM Notillia.ConstraintColumns cc
 		INNER JOIN Notillia.PrimaryKeys pk ON cc.[Database] = pk.[Database] AND cc.[Schema] = pk.[Schema] AND cc.Constraint_Name = pk.Constraint_Name
@@ -1019,29 +1019,29 @@ VALUES (
 		'children',
 		'children',
 		'{{children}}',
-		'case ''{{notillia_1}}'':
-		$query = "SELECT {{ChildSelectAllColumns={{notillia_1}}}}, (
+		'case ''{{ReplaceValue_1}}'':
+		$query = "SELECT {{ChildSelectAllColumns={{ReplaceValue_1}}}}, (
 		SELECT COUNT(*) FROM (
 		SELECT 1
 		FROM `{{TableName}}` master
-		INNER JOIN `{{notillia_1}}` child ON {{ChildMasterRelation={{notillia_1}}}}
+		INNER JOIN `{{ReplaceValue_1}}` child ON {{ChildMasterRelation={{ReplaceValue_1}}}}
 		";
 		if ( isset( $_POST[''where''] ) && is_array( $_POST[''where''] ) ) {
-			$query .= "WHERE {{ChildMasterWhereClause={{notillia_1}}}} ";
+			$query .= "WHERE {{ChildMasterWhereClause={{ReplaceValue_1}}}} ";
 			$data = $this -> createFKColumnArray( $_POST[''where''], $child );
 		}
 		$query .= "
-		GROUP BY {{ChildOrderBy={{notillia_1}}}}
+		GROUP BY {{ChildOrderBy={{ReplaceValue_1}}}}
 		) AS subQuery
 		) AS ''notillia.totalrecords''
 		FROM `{{TableName}}` master
-		INNER JOIN `{{notillia_1}}` child
-		ON {{ChildMasterRelation={{notillia_1}}}}";
+		INNER JOIN `{{ReplaceValue_1}}` child
+		ON {{ChildMasterRelation={{ReplaceValue_1}}}}";
 		if ( isset( $_POST[''where''] ) && is_array( $_POST[''where''] ) ) {
-			$query .= "WHERE {{ChildMasterWhereClause={{notillia_1}}}} ";
+			$query .= "WHERE {{ChildMasterWhereClause={{ReplaceValue_1}}}} ";
 			$data = $this -> createFKColumnArray( $_POST[''where''], $child );
 		}
-		$query .= "GROUP BY {{ChildOrderBy={{notillia_1}}}}
+		$query .= "GROUP BY {{ChildOrderBy={{ReplaceValue_1}}}}
 		LIMIT :limit
 		OFFSET :offset";
 		break;',
@@ -1059,7 +1059,7 @@ VALUES (
 		'ChildSelectAllColumns',
 		'ChildSelectAllColumns',
 		'{{ChildSelectAllColumns}}',
-		'child.`{{notillia_1}}`, ',
+		'child.`{{ReplaceValue_1}}`, ',
 		'SELECT c.Column_Name, 1, 1, 1, 1, 1
 		 FROM Notillia.Columns c
 		 WHERE c.[Schema] = ''{{SchemaName}}'' AND c.[Database] = ''{{DatabaseName}}'' AND c.Table_Name = ''{{ParameterTag}}''',
@@ -1074,7 +1074,7 @@ VALUES (
 		'ChildMasterRelation',
 		'ChildMasterRelation',
 		'{{ChildMasterRelation}}',
-		'master.`{{notillia_1}}` = child.`{{notillia_2}}` AND ',
+		'master.`{{ReplaceValue_1}}` = child.`{{ReplaceValue_2}}` AND ',
 		'SELECT NFKC.Master_Column, NFKC.Child_Column, 1, 1, 1, 1
 		 FROM Notillia.ForeignKeys NFK
 		 INNER JOIN Notillia.ForeignKeyColumns NFKC
@@ -1091,7 +1091,7 @@ VALUES (
 		'ChildMasterWhereClause',
 		'ChildMasterWhereClause',
 		'{{ChildMasterWhereClause}}',
-		'master.`{{notillia_1}}` = :column_{{notillia_1}} AND ',
+		'master.`{{ReplaceValue_1}}` = :column_{{ReplaceValue_2}} AND ',
 		'SELECT NFKC.Master_Column, NFKC.Child_Column, 1, 1, 1, 1
 		 FROM Notillia.ForeignKeys NFK
 		 INNER JOIN Notillia.ForeignKeyColumns NFKC
@@ -1108,7 +1108,7 @@ VALUES (
 		'ChildOrderBy',
 		'ChildOrderBy',
 		'{{ChildOrderBy}}',
-		'child.`{{notillia_1}}`, ',
+		'child.`{{ReplaceValue_1}}`, ',
 		'SELECT cc.Column_Name, 1, 1, 1, 1, 1
 		 FROM Notillia.ConstraintColumns cc
 			LEFT JOIN Notillia.PrimaryKeys pk ON cc.[Schema] = pk.[Schema] AND cc.[Database] = pk.[Database] AND cc.Table_Name = pk.Table_Name AND cc.Constraint_Name = pk.Constraint_Name
