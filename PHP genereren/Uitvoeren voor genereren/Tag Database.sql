@@ -1,6 +1,3 @@
-USE muziekdatabase;
-GO
-
 IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES t WHERE t.TABLE_NAME = 'Tags' AND t.TABLE_SCHEMA = 'Notillia') BEGIN
 	DROP TABLE Notillia.Tags;
 END
@@ -946,7 +943,7 @@ VALUES (
 		WHERE c.[Database] = ''{{DatabaseName}}'' AND c.[Schema] = ''dbo'' AND c.Table_Name = ''{{TableName}}'' 
 			  AND EXISTS (SELECT 1 FROM Notillia.ForeignKeyColumns fkc 
 						  WHERE fkc.[Database] = ''{{DatabaseName}}'' AND fkc.[Schema] = ''{{SchemaName}}'' AND 
-								fkc.Master_Table = c.Table_Name AND fkc.Child_Column = c.Column_Name AND
+								fkc.Master_Table = c.Table_Name AND fkc.Master_Column = c.Column_Name AND
 								fkc.Child_Table = ''{{ParameterTag}}'')',
 		'',
 		''
@@ -1094,7 +1091,7 @@ VALUES (
 		'ChildMasterWhereClause',
 		'ChildMasterWhereClause',
 		'{{ChildMasterWhereClause}}',
-		'master.`{{notillia_1}}` = :column_{{notillia_2}} AND ',
+		'master.`{{notillia_1}}` = :column_{{notillia_1}} AND ',
 		'SELECT NFKC.Master_Column, NFKC.Child_Column, 1, 1, 1, 1
 		 FROM Notillia.ForeignKeys NFK
 		 INNER JOIN Notillia.ForeignKeyColumns NFKC
@@ -1121,6 +1118,3 @@ VALUES (
 			BEGIN
 				SET @tag_result = SUBSTRING(@tag_result, 0, (LEN(@tag_result) -0));
 			END');
-		 --  WHERE NFK.[Database] = ''{{DatabaseName}}'' AND NFK.[Schema] = ''{{SchemaName}}'' AND NFK.Master_Table = ''{{TableName}}''
-
-

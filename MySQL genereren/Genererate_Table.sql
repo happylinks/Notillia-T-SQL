@@ -1,5 +1,3 @@
-USE muziekdatabase
-go
 EXEC generateMySql
 go
 
@@ -309,7 +307,7 @@ GO
 
 /*==============================================================*/
 /* PROC: Notillia.createMysqlFkFile                             */
-/* Returns alter table statements with foreign keys and cascading */			    						*/
+/* Returns alter table statements with foreign keys and cascading */
 /*==============================================================*/
 
 CREATE FUNCTION Notillia.createMysqlFkFile()
