@@ -164,7 +164,10 @@ class {{TableName}}Controller extends WebpageController{
 
 	public function actionCsv(){
 		$csv = new csvWriter();
-		$result = $this -> DB -> select("SELECT {{AllColumns}} FROM `{{TableName}}` LIMIT :limit OFFSET :offset",array(''limit''=>DefaultLimit,''offset''=>1));
+		$result = $this -> DB -> select("SELECT {{AllColumns}} 
+										 FROM `{{TableName}}` 
+										 ORDER BY {{AllPkColumns}} ASC
+										 LIMIT :limit OFFSET :offset", 1000, 0);
 		$data = array();
 		$headers = array();
 		foreach($result[0] as $key=>$value){
