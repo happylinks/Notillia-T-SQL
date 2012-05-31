@@ -59,37 +59,40 @@ class {{TableName}}Controller extends WebpageController{
 
 			$query = "SELECT {{AllColumns}}, (SELECT COUNT(1) FROM `{{TableName}}`) as ''notillia.totalrecords''
 			FROM `{{TableName}}` ";
-
-			switch ( @$_POST[''navigation''] ) {
-				case -2:
-					$query .= "ORDER BY {{AllPkColumns}} ASC";
-					$offset = 0;
-					break;
-				case -1:
-					if ( isset( $_POST[''where''] ) && is_array( $_POST[''where''] ) ) {
-						$query .= "WHERE {{PKSmallerClause}} ORDER BY  {{AllPkColumns}} DESC";
-						$data = $this -> createPKColumnArray( $_POST[''where''] );
-						$offset = 1;
-					}
-					break;
-				case 1:
-					if ( isset( $_POST[''where''] ) && is_array( $_POST[''where''] ) ) {
-						$query .= "WHERE {{PKBiggerClause}} ORDER BY  {{AllPkColumns}} ASC";
-						$data = $this -> createPKColumnArray( $_POST[''where''] );
-						$offset = 1;
-					}
-					break;
-				case 2:
-					$query .= "ORDER BY {{AllPkColumns}} DESC ";
-					$offset = 0;
-					break;
-				default:
-					// Invalid number specified
-					if ( isset( $_POST[''where''] ) && is_array( $_POST[''where''] ) ) {
-						$query .= "WHERE {{PKEqualClause}} ORDER BY  {{AllPKColumns}} ASC";
-						$data = $this -> createPKColumnArray( $_POST[''where''] );
-					}
-					break;
+			if(isset($_POST[''navigation''])){
+				switch ( @$_POST[''navigation''] ) {
+					case -2:
+						$query .= "ORDER BY {{AllPkColumns}} ASC";
+						$offset = 0;
+						break;
+					case -1:
+						if ( isset( $_POST[''where''] ) && is_array( $_POST[''where''] ) ) {
+							$query .= "WHERE {{PKSmallerClause}} ORDER BY  {{AllPkColumns}} DESC";
+							$data = $this -> createPKColumnArray( $_POST[''where''] );
+							$offset = 1;
+						}
+						break;
+					case 1:
+						if ( isset( $_POST[''where''] ) && is_array( $_POST[''where''] ) ) {
+							$query .= "WHERE {{PKBiggerClause}} ORDER BY  {{AllPkColumns}} ASC";
+							$data = $this -> createPKColumnArray( $_POST[''where''] );
+							$offset = 1;
+						}
+						break;
+					case 2:
+						$query .= "ORDER BY {{AllPkColumns}} DESC ";
+						$offset = 0;
+						break;
+					default:
+						// Invalid number specified
+						if ( isset( $_POST[''where''] ) && is_array( $_POST[''where''] ) ) {
+							$query .= "WHERE {{PKEqualClause}} ORDER BY  {{AllPKColumns}} ASC";
+							$data = $this -> createPKColumnArray( $_POST[''where''] );
+						}
+						break;
+				}
+			} else {
+				$query .= "ORDER BY {{AllPkColumns}} ASC";
 			}
 			$query .= " LIMIT :limit OFFSET :offset";
 
@@ -186,7 +189,7 @@ class {{TableName}}Controller extends WebpageController{
 		if ( {{CheckPostAllColumns}} ) {
 			$data = $this -> createColumnArray( $_POST );
 			$query = "INSERT INTO `{{TableName}}` ({{AllColumns}}) VALUES
-			({{AllColumns}})";
+			({{AllColumnsWIthColumn_Prefix}})";
 			$statement = $this -> DB -> query( $query, $data );
 			if ( !is_array( $statement ) ) {
 				$this -> giveJSONmessage( true, ''Record is inserted.'' );
@@ -502,7 +505,8 @@ VALUES (
 		'<li name="{{ReplaceValue_1}}"><a href="#">{{ReplaceValue_1}}</a></li>',
 		'SELECT fc.Child_Table,1,1,1,1,1 
 		 FROM Notillia.ForeignKeyColumns fc 
-		 WHERE fc.[Schema] = ''{{SchemaName}}'' AND fc.[Database] = ''{{DatabaseName}}'' AND fc.[Master_Table] = ''{{TableName}}''', '', ''
+		 WHERE fc.[Schema] = ''{{SchemaName}}'' AND fc.[Database] = ''{{DatabaseName}}'' AND fc.[Master_Table] = ''{{TableName}}''
+		 GROUP BY fc.Child_Table', '', ''
 		),
 		(
 		'HTML Table Layout',
