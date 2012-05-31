@@ -167,7 +167,7 @@ class {{TableName}}Controller extends WebpageController{
 		$result = $this -> DB -> select("SELECT {{AllColumns}} 
 										 FROM `{{TableName}}` 
 										 ORDER BY {{AllPkColumns}} ASC
-										 LIMIT :limit OFFSET :offset", 1000, 0);
+										 LIMIT :limit OFFSET :offset", null, 1000, 0);
 		$data = array();
 		$headers = array();
 		foreach($result[0] as $key=>$value){
@@ -548,6 +548,8 @@ VALUES (
 							<a name="add" class="btn btn-mini btn-success tip" title="Add"><i class="icon icon-plus icon-white"></i></a>
 							<a name="edit" class="btn btn-mini btn-warning tip" title="Edit"><i class="icon icon-edit icon-white"></i></a>
 							<a name="del"class="btn btn-mini btn-danger tip" title="Delete"><i class="icon icon-trash icon-white"></i></a>
+							&nbsp;&nbsp; 
+							<a name="tomaster"class="btn btn-mini tip" title="Switch to Master"><i class="icon icon-fire"></i></a>
 						<!--/GENERATE BUTTONS HERE-->
 					</span>
 					<span class="inline-search">
