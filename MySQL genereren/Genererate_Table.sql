@@ -16,7 +16,7 @@ Views needs to be generated before executing this script
 /* SP: the starting point for generating the MySql script												*/
 /*==============================================================*/
 
-ALTER PROC Notillia.generateMySQL
+CREATE PROC Notillia.generateMySQL
 
 @outputPath VARCHAR(MAX) = 'C:',
 @fileName VARCHAR(MAX) = 'mySql.sql'
@@ -348,28 +348,18 @@ GO
 
 /*===============================================================*/
 /* UDF : Notillia.createMysqlIndex								 */
-/* Returns indexes for foreign key colums						 */
+/* Returns indexes for foreign key columns						 */
 /*===============================================================*/
-
 
 CREATE FUNCTION Notillia.createMysqlIndex()
 RETURNS NVARCHAR(MAX)
 BEGIN
+DECLARE @String NVARCHAR(MAX); SET @String = '';
 
-DECLARE @index VARCHAR(2000)
-SET @index = ''
+SELECT	@String += 	CHAR(9) + ' CREATE INDEX ' + FK.Constraint_Name + CHAR(10) + ' ON ' + FK.Child_Table +
+	 '(' +  Notillia.fnGetChildColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ')' +  ';' + char(10) + char(10)
+FROM Notillia.Foreignkeys FK
 
-SELECT @index += 'CREATE INDEX FK_' + sub.[table] + '_' + sub.[column] + CHAR(10)+
-					CHAR(9) + 'ON ' + sub.[table] + ' (' + sub.[column] + ');' + CHAR(10) + CHAR(10)
-	FROM (	SELECT Master_Table AS 'table',Master_Column AS 'column' FROM Notillia.ForeignKeyColumns
-				GROUP BY Master_Table,Master_Column
-				UNION
-			SELECT Child_Table AS 'table',Child_Column AS 'column' FROM Notillia.ForeignKeyColumns
-				GROUP BY Child_Table,Child_Column ) sub
-	WHERE EXISTS(	SELECT ncc.Table_Name, ncc.Column_Name FROM Notillia.ConstraintColumns ncc
-						INNER JOIN Notillia.PrimaryKeys npk
-							ON ncc.Constraint_Name = npk.Constraint_Name
-						WHERE ncc.Column_Name = sub.[column] AND ncc.Table_Name = sub.[table])
-	RETURN @index;
+RETURN @String;
 END
 
