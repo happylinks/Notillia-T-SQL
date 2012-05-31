@@ -1,6 +1,8 @@
 create database muziekdatabase;
+GO
 
 use muziekdatabase;
+GO
 
 create table Bezettingsregel (
    stuknr               numeric(5)           not null,

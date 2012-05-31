@@ -457,14 +457,14 @@ VALUES (
 		'HTML Table Layout',
 		'Contains the view (HTML) layout of each table.',
 		@template,
-		'app\Views\{{TableName}}',
+		'Genereer\app\Views\{{TableName}}',
 		'index.php'
 		),
 		(
 		'PHP Controller Layout',
 		'Contains the controller (PHP) layout of each table.',
 		@PHPController,
-		'app\Controllers',
+		'Genereer\app\Controllers',
 		'{{TableName}}.php'
 		);
 
@@ -635,11 +635,9 @@ VALUES (
 		'{{ChildTableHeader}}',
 		'<th contraint="{{ReplaceValue_3}}" name="{{ReplaceValue_1}}"><span class="tiptop" title="{{ReplaceValue_2}}">{{ReplaceValue_1}}</span></th>',
 		'SELECT c.Column_Name, c.Data_Type,
-		(SELECT ''pk'' FROM Notillia.ConstraintColumns cc
-		INNER JOIN Notillia.PrimaryKeys pk
-		ON pk.Constraint_Name = cc.Constraint_Name
-		WHERE pk.Table_Name = c.Table_Name
-		AND cc.Column_Name = c.Column_Name), 1, 1, 1
+		(SELECT ''fk'' FROM Notillia.ForeignKeyColumns
+		WHERE Master_Table = ''{{TableName}}'' AND Child_Table = ''{{ParameterTag}}''
+		AND Child_Column = c.Column_Name), 1, 1, 1
 		FROM Notillia.Columns c
 		WHERE c.[Schema] = ''{{SchemaName}}'' AND c.[Database] = ''{{DatabaseName}}'' AND c.[Table_Name] = ''{{ParameterTag}}''', '', ''
 		),

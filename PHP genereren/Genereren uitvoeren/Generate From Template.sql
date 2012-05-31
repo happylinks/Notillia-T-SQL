@@ -1,3 +1,4 @@
+CREATE PROCEDURE Notillia.generateDatabase AS BEGIN
 
 DECLARE @driveLetter NVARCHAR(2) = 'C:';
 DECLARE @database_name NVARCHAR(50) = 'muziekdatabase';
@@ -57,3 +58,8 @@ END
 
 CLOSE notillia_tables;
 DEALLOCATE notillia_tables;
+
+EXEC Notillia.generateMySql
+
+END
+GO

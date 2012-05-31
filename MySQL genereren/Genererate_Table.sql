@@ -19,10 +19,10 @@ Views needs to be generated before executing this script
 CREATE PROC Notillia.generateMySQL
 
 @outputPath VARCHAR(MAX) = 'C:',
-@fileName VARCHAR(MAX) = 'mySql.sql'
+@fileName VARCHAR(MAX) = 'mySQL.sql'
 AS BEGIN
 DECLARE @generated VARCHAR(MAX) = '' + CHAR(10) ;
-DECLARE @outputFolder VARCHAR(128) = 'MySQL';
+DECLARE @outputFolder VARCHAR(128) = 'Genereer\MySQL';
 
 DECLARE @error BIT = 0 ;
 
@@ -53,7 +53,6 @@ SET @generated += '/*===========================================================
 				  '/*																*/' + CHAR(10) +
 				  '/*===============================================================*/' + CHAR(10) + CHAR(10)
 SET @generated += Notillia.createMysqlFkFile();
-PRINT @generated
 
 DECLARE @outputFilePath VARCHAR(MAX) = @outputPath + '\' + @outputFolder;
 
