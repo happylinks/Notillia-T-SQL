@@ -315,7 +315,7 @@ BEGIN
 		DECLARE @tag_afterResult NVARCHAR(max);
 		SET @output_out = @output_in;
 		DECLARE ReplaceValue_tags CURSOR FOR 
-			SELECT name, tag, source, query, beforeResult, afterResult FROM Notillia.Tags WHERE template_name = @template_name ORDER BY id ASC
+			SELECT name, tag, source, query, beforeResult, afterResult FROM Notillia.Tags WHERE template_name = @template_name ORDER BY template_name, name ASC
 		OPEN ReplaceValue_tags
 		FETCH NEXT FROM ReplaceValue_tags INTO @tag_name,@tag_tag,@tag_source,@tag_query,@tag_beforeResult,@tag_afterResult
 		WHILE @@FETCH_STATUS = 0

@@ -23,7 +23,6 @@ GO
 *	Tag table, contains all the replacement tags for an certain template.
 */
 CREATE TABLE Notillia.Tags(
-	id				bigint			not null IDENTITY(1,1),
 	template_name	varchar(128)		not null,
 	name			varchar(128)		not null,
 	description		varchar(128)	not null,
@@ -475,7 +474,7 @@ VALUES (
 		'TableHeader',
 		'Give all columns including datatypes in an table header format.',
 		'{{TableHeader}}',
-		'<th contraint="{{ReplaceValue_3}}" name="{{ReplaceValue_1}}"><span class="tiptop" title="{{ReplaceValue_2}}">{{ReplaceValue_1}}</span></th>',
+		'<th constraint="{{ReplaceValue_3}}" name="{{ReplaceValue_1}}"><span class="tiptop" title="{{ReplaceValue_2}}">{{ReplaceValue_1}}</span></th>',
 		'SELECT c.Column_Name, c.Data_Type,
 		(SELECT ''pk'' FROM Notillia.ConstraintColumns cc
 		INNER JOIN Notillia.PrimaryKeys pk
@@ -633,7 +632,7 @@ VALUES (
 		'ChildTableHeader',
 		'Give all columns including datatypes in an table header format of a child.',
 		'{{ChildTableHeader}}',
-		'<th contraint="{{ReplaceValue_3}}" name="{{ReplaceValue_1}}"><span class="tiptop" title="{{ReplaceValue_2}}">{{ReplaceValue_1}}</span></th>',
+		'<th constraint="{{ReplaceValue_3}}" name="{{ReplaceValue_1}}"><span class="tiptop" title="{{ReplaceValue_2}}">{{ReplaceValue_1}}</span></th>',
 		'SELECT c.Column_Name, c.Data_Type,
 		(SELECT ''fk'' FROM Notillia.ForeignKeyColumns
 		WHERE Master_Table = ''{{TableName}}'' AND Child_Table = ''{{ParameterTag}}''
@@ -739,7 +738,7 @@ VALUES (
 		<div class="controls">'' + CHAR(10) + 
 		CASE c.IS_NULLable WHEN ''YES'' 
 		THEN ''<div class="input-append">
-		<input class="'' + c.Data_Type + ''" type="text" name="'' + c.Column_Name + '' " value="" style="width:174px;" class="hasnull"/>
+		<input class="'' + c.Data_Type + ''" type="text" name="'' + c.Column_Name + ''" value="" style="width:174px;" class="hasnull"/>
 		<span class="addon-on"><input class="null tiptop" title="NULL" type="checkbox" name="null_'' + c.Column_Name + ''" checked=''''true''''/></span>
 		</div>'' + CHAR(10)
 		ELSE ''<input class="'' + c.Data_Type + ''" type="text" name="'' + c.Column_Name + ''" value="" />'' + CHAR(10) END +
