@@ -648,7 +648,7 @@ VALUES (
 		'{{ChildDetailColumns}}',
 		'{{ReplaceValue_1}}',
 		'SELECT CASE d.RowNumber % 2 
-			WHEN 1 THEN ''<tr><th><span class="tiptop" title="'' + d.Data_Type + ''">'' + d.Column_Name + ''</span></th><td name="'' + d.Column_Name + ''"></td>''
+			WHEN 1 THEN ''<tr><th><span class="tiptop" title="'' + d.Data_Type + ''" >'' + d.Column_Name + ''</span></th><td name="'' + d.Column_Name + ''"></td>''
 			WHEN 0 THEN ''<th><span class="tiptop" title="'' + d.Data_Type + ''">'' + d.Column_Name + ''</span></th><td name="'' + d.Column_Name + ''"></td></tr>'' ELSE ''ERROR'' END
 			AS ''Case'', 1, 1, 1, 1, 1
 			FROM( SELECT c.Column_Name, c.Data_Type, ROW_NUMBER() OVER(ORDER BY c.[Schema], c.[Database], c.[Table_Name], c.[Column_Name] DESC) AS ''RowNumber''
