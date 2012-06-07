@@ -44,11 +44,15 @@ class {{TableName}}Controller extends WebpageController{
 	public function __construct() {
 		parent::__construct();
 	}
-
+	/**
+	 * Is called from the MVC Framework
+	 */
 	public function actionIndex() {
 		$this -> loadView( ''{{TableName}}/index'' );
 	}
-
+	/**
+	 * Used for requesting records from the database.
+	 */
 	public function actionRecord() {
 		if ( isset( $_POST ) ) {
 			$page = ( isset( $_POST[''page''] ) && is_numeric( $_POST[''page''] ) ) ? $_POST[''page''] : 1;
@@ -103,7 +107,9 @@ class {{TableName}}Controller extends WebpageController{
 		}
 		$this -> loadView( ''json'' );
 	}
-
+	/**
+	 * Used for requesting child records from the database.
+	 */
 	public function actionChildGrid() {
 		if ( isset( $_POST ) ) {
 			$page = ( isset( $_POST[''page''] ) && is_numeric( $_POST[''page''] ) ) ? $_POST[''page''] : 1;
@@ -160,7 +166,9 @@ class {{TableName}}Controller extends WebpageController{
 			return false;
 		}
 	}
-
+	/**
+	 * Returns an CSV file with the database table. Contains max 1000 rows.
+	 */
 	public function actionCsv(){
 		$csv = new csvWriter();
 		$result = $this -> DB -> select("SELECT {{AllColumns}} 

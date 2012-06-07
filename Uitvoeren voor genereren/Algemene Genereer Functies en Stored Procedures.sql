@@ -303,7 +303,17 @@ END
 
 GO
 
-
+/*
+*	The procedure parseTag parses all the tags from the database into a template.
+*	@output_in			VARCHAR that contains the template
+*	@template_name		Name of the template.
+*	@database_name		Name of the database.
+*	@schema_name		Name of the schema.
+*	@table_name			Name of the table.
+*	@count				How many tims has the while loop run without finding tags.
+*	@output_out			Template output.
+*	@count_check		Count output.
+*/
 CREATE PROCEDURE Notillia.parseTag @output_in NVARCHAR(max), @template_name NVARCHAR(25), @database_name NVARCHAR(50), @schema_name NVARCHAR(50), @table_name NVARCHAR(50), @count INT, @output_out NVARCHAR(max) OUTPUT, @count_check INT OUTPUT
 AS
 BEGIN
