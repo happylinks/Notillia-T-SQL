@@ -355,7 +355,7 @@ RETURNS NVARCHAR(MAX)
 BEGIN
 DECLARE @String NVARCHAR(MAX); SET @String = '';
 
-SELECT	@String += 	CHAR(9) + ' CREATE INDEX ' + FK.Constraint_Name + CHAR(10) + ' ON ' + FK.Master_Table +
+SELECT	@String += 	CHAR(9) + ' CREATE INDEX INDEX_' + FK.Constraint_Name + CHAR(10) + ' ON ' + FK.Master_Table +
 	 '(' +  Notillia.fnGetMasterColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ')' +  ';' + char(10) + char(10)
 FROM Notillia.Foreignkeys FK
 
