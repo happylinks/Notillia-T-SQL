@@ -334,9 +334,9 @@ RETURNS NVARCHAR(MAX)
 AS
 BEGIN
 	DECLARE @String NVARCHAR(MAX); SET @String = '';
-	SELECT	@String += 'ALTER TABLE `' + FK.Master_Table + '`' + CHAR(10) + 
-				CHAR(9) + ' ADD CONSTRAINT ' + FK.Constraint_Name + ' FOREIGN KEY (' + Notillia.fnGetMasterColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ') ' + CHAR(10) + 
-					CHAR(9) + CHAR(9) + 'REFERENCES `' + FK.Child_Table + '` (' + Notillia.fnGetChildColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ')' + CHAR(10) + 
+	SELECT	@String += 'ALTER TABLE `' + FK.Child_Table + '`' + CHAR(10) + 
+				CHAR(9) + ' ADD CONSTRAINT ' + FK.Constraint_Name + ' FOREIGN KEY (' + Notillia.fnGetChildColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ') ' + CHAR(10) + 
+					CHAR(9) + CHAR(9) + 'REFERENCES `' + FK.Master_Table + '` (' + Notillia.fnGetMasterColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ')' + CHAR(10) + 
 					CHAR(9) + CHAR(9) + CHAR(9) + ' ON UPDATE ' + FK.Update_Rule + CHAR(10) + 
 					CHAR(9) + CHAR(9) + CHAR(9) + ' ON DELETE  ' + FK.Delete_Rule + CHAR(10) + ';' +
 					CHAR(10)
@@ -355,8 +355,8 @@ RETURNS NVARCHAR(MAX)
 BEGIN
 DECLARE @String NVARCHAR(MAX); SET @String = '';
 
-SELECT	@String += 	CHAR(9) + ' CREATE INDEX ' + FK.Constraint_Name + CHAR(10) + ' ON ' + FK.Child_Table +
-	 '(' +  Notillia.fnGetChildColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ')' +  ';' + char(10) + char(10)
+SELECT	@String += 	CHAR(9) + ' CREATE INDEX ' + FK.Constraint_Name + CHAR(10) + ' ON ' + FK.Master_Table +
+	 '(' +  Notillia.fnGetMasterColumnsForForeignKey (FK.[Schema], FK.Constraint_Name) + ')' +  ';' + char(10) + char(10)
 FROM Notillia.Foreignkeys FK
 
 RETURN @String;
