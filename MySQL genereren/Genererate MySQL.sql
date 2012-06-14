@@ -47,12 +47,12 @@ SET @generated += '/*===========================================================
 				  '/* CREATE INDEXES                                                */' + CHAR(10) +
 				  '/*																*/' + CHAR(10) +
 				  '/*===============================================================*/' + CHAR(10) + CHAR(10)
-SET @generated += Notillia.createForeignKeys();
+SET @generated += Notillia.createMysqlIndex();
 SET @generated += '/*===============================================================*/' + CHAR(10) +
 				  '/* CREATE FOREIGN KEYS                                           */' + CHAR(10) +
 				  '/*																*/' + CHAR(10) +
 				  '/*===============================================================*/' + CHAR(10) + CHAR(10)
-SET @generated += Notillia.createMysqlFkFile();
+SET @generated += Notillia.createForeignKeys();
 
 DECLARE @outputFilePath VARCHAR(MAX) = @outputPath + '\' + @outputFolder;
 
