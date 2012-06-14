@@ -47,7 +47,7 @@ SET @generated += '/*===========================================================
 				  '/* CREATE INDEXES                                                */' + CHAR(10) +
 				  '/*																*/' + CHAR(10) +
 				  '/*===============================================================*/' + CHAR(10) + CHAR(10)
-SET @generated += Notillia.createMysqlIndex();
+SET @generated += Notillia.createForeignKeys();
 SET @generated += '/*===============================================================*/' + CHAR(10) +
 				  '/* CREATE FOREIGN KEYS                                           */' + CHAR(10) +
 				  '/*																*/' + CHAR(10) +
@@ -324,12 +324,12 @@ END
 GO
 
 /*================================================================*/
-/* UDF : Notillia.createMysqlFkFile                               */
+/* UDF : Notillia.createForeignKeys                              */
 /* Returns alter table statements with foreign keys and cascading */
 /*================================================================*/
 
 
-CREATE FUNCTION Notillia.createMysqlFkFile()
+CREATE FUNCTION Notillia.createForeignKeys()
 RETURNS NVARCHAR(MAX)
 AS
 BEGIN
